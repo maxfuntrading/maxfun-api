@@ -1,0 +1,21 @@
+FROM rust:1.84 as base
+WORKDIR /app
+ADD Cargo.toml Cargo.lock /app/
+RUN mkdir -p /app/src &&\
+    echo "fn main() {}" > /app/src/main.rs &&\
+    cargo build --release
+
+FROM base as builder
+ADD . /app
+RUN touch src/main.rs &&\
+    cargo build --release
+
+FROM ubuntu:22.04
+ARG ENV_FILE
+WORKDIR /app
+RUN apt update && \
+    apt install -y ca-certificates
+COPY --from=builder /app/target/release/maxfun-api /app
+COPY --from=builder /app/${ENV_FILE} /app/.env
+EXPOSE 9600
+CMD ["/app/maxfun-api"]
