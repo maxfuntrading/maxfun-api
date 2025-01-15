@@ -1,12 +1,14 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "user")]
+#[sea_orm(table_name = "raised_token")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub address: String,
     pub name: String,
-    pub avatar: Option<String>,
+    pub symbol: String,
+    pub decimal: i32,
+    pub icon: Option<String>,
     pub create_ts: i64,
 }
 

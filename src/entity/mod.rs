@@ -1,4 +1,20 @@
 pub mod user;
 pub mod user_avatar;
+pub mod tag_info;
+pub mod evt_trade_log;
+pub mod token_info;
+pub mod raised_token;
+pub mod token_comment;
+pub mod token_summary;
+pub mod evt_token_log;
+pub mod evt_balance_log;
+pub mod user_summary;
+pub mod kline_5m;
+pub mod evt_transfer_log;
+pub mod evt_txn_log;
+
 pub use user::Entity as User;
 pub use user_avatar::Entity as UserAvatar;
+pub use tag_info::Entity as TagInfo;
+pub use evt_trade_log::Entity as EvtTradeLog;
+pub use token_info::Entity as TokenInfo;

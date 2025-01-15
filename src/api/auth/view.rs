@@ -1,4 +1,4 @@
-use axum::extract::{Json, Query, State, Extension};
+use axum::extract::{Json, State, Extension};
 use axum::http::{header::SET_COOKIE, HeaderMap};
 use axum::response::IntoResponse;
 use axum_extra::{headers, TypedHeader};
