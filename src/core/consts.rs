@@ -12,6 +12,8 @@ pub static PG_URL: Lazy<String> =
     Lazy::new(|| std::env::var("PG_URL").expect("env not found PG_URL"));
 pub static REDIS_URL: Lazy<String> =
     Lazy::new(|| std::env::var("REDIS_URL").expect("env not found REDIS_URL"));
+pub static S3_AVATAR_URI: Lazy<String> =
+    Lazy::new(|| std::env::var("S3_AVATAR_URI").expect("env not found S3_AVATAR_URI"));
 
 // jwt 有效时长
 pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;

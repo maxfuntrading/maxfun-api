@@ -19,3 +19,11 @@ pub struct VerifyResp {
     pub auth_type: String,
     pub auth_token: String,
 }
+
+#[derive(Serialize, Debug)]
+pub struct UserInfoResp {
+    pub address: String,
+    pub name: String,
+    pub avatar: Option<String>,
+    pub create_ts: i64,
+}
