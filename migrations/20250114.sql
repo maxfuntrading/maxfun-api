@@ -68,3 +68,32 @@ CREATE TABLE user_avatar
     avatar    VARCHAR(255),
     create_ts BIGINT
 );
+
+INSERT INTO tag_info (name, sort, create_ts) VALUES ('Ai', 1, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts) VALUES ('Game', 2, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts) VALUES ('Defi', 3, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts) VALUES ('De-Sci', 4, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts) VALUES ('Social', 5, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts) VALUES ('Depin', 6, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts) VALUES ('Others', 7, EXTRACT(EPOCH FROM NOW()));
+
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('1.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('2.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('3.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('4.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('5.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('6.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('7.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('8.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('9.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('10.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('11.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('12.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('13.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('14.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('15.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('16.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('17.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('18.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('19.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts) VALUES ('20.svg', EXTRACT(EPOCH FROM NOW()));
