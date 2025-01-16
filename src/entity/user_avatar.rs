@@ -5,9 +5,8 @@ use crate::utility::LibResult;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "user_avatar")]
 pub struct Model {
-    #[sea_orm(primary_key)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i32,
-    #[sea_orm(column_type = "String(Some(255))")]
     pub avatar: String,
     pub create_ts: i64,
 }

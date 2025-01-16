@@ -1,4 +1,4 @@
-use axum::extract::{Json, Query, State, Extension};
+use axum::extract::{Json, State, Extension};
 use axum::http::{header::SET_COOKIE, HeaderMap};
 use axum::response::IntoResponse;
 use axum_extra::{headers, TypedHeader};
@@ -11,7 +11,7 @@ use crate::core::state::ReqContext;
 
 static COOKIE_NAME: &str = "nonce";
 
-pub async fn login() -> LibResult<impl IntoResponse> {
+pub async fn nonce() -> LibResult<impl IntoResponse> {
     let rsp = logic::nonce().await?;
     tracing::info!("wallet_login, rsp {:?}", rsp);
 

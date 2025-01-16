@@ -3,8 +3,6 @@ use redis::Client;
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use tracing::log;
 
-use super::consts;
-
 
 pub type DB = DatabaseConnection;
 pub type RedisPool = Client;
