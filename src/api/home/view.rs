@@ -18,8 +18,3 @@ pub async fn get_token_list(
     let rsp = logic::get_token_list(app_state, query).await?;
     Ok(Resp200::new(rsp))
 }
-
-pub async fn get_token_tags(State(app_state): State<AppState>) -> LibResult<impl IntoResponse> {
-    let rsp = logic::get_token_tags(app_state).await?;
-    Ok(Resp200::new(rsp))
-}
