@@ -1,9 +1,8 @@
 use crate::api::profile::schema;
 use crate::core::{consts, AppState};
-use crate::entity::{token_info, token_summary, user_summary, User, UserSummary};
+use crate::entity::{token_info, token_summary, User, UserSummary};
 use crate::utility::{LibError, LibResult};
-use ethers::core::k256::elliptic_curve::weierstrass::add;
-use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, RelationTrait};
+use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
 
 pub async fn get_user_info(
     app_state: AppState,
