@@ -66,24 +66,3 @@ pub async fn verify(
         auth_token: jwt::encode_token(address)?,
     })
 }
-
-pub async fn get_user_info(
-    app_state: AppState,
-    address: String,
-) -> LibResult<schema::UserInfoResp> {
-    let user = User::find_by_id(&address)
-        .one(&app_state.db_pool)
-        .await?
-        .ok_or(LibError::UserNotFound)?;
-
-    let avatar = user.avatar.map(|avatar_path| {
-        format!("{}{}", consts::S3_AVATAR_URI.as_str(), avatar_path)
-    });
-
-    Ok(schema::UserInfoResp {
-        address: user.address,
-        name: user.name,
-        avatar,
-        create_ts: user.create_ts,
-    })
-}
