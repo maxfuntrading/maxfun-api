@@ -48,11 +48,3 @@ pub async fn logout() -> LibResult<impl IntoResponse> {
     tracing::info!("logout");
     Ok(Resp200::new("logout"))
 }
-
-pub async fn userinfo(
-    State(app_state): State<AppState>,
-    Extension(ctx): Extension<ReqContext>,
-) -> LibResult<impl IntoResponse> {
-    let rsp = logic::get_user_info(app_state, ctx.user_addr).await?;
-    Ok(Resp200::new(rsp))
-}

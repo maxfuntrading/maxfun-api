@@ -17,4 +17,4 @@ pub use user::Entity as User;
 pub use user_avatar::Entity as UserAvatar;
 pub use tag_info::Entity as TagInfo;
 pub use evt_trade_log::Entity as EvtTradeLog;
-pub use token_info::Entity as TokenInfo;
+pub use user_summary::Entity as UserSummary;
