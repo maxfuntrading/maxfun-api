@@ -7,6 +7,7 @@ use axum::{
 mod auth;
 mod home;
 mod profile;
+mod launcher;
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -32,5 +33,10 @@ pub fn router() -> Router<AppState> {
                 .route("/userinfo", get(profile::view::userinfo))
                 .route("/token-owned", get(profile::view::get_token_owned))
                 .route("/token-created", get(profile::view::get_token_created)),
+        )
+        .nest(
+            "/launcher",
+            Router::new()
+                .route("/launch-token", post(launcher::view::launch_token))
         )
 }
