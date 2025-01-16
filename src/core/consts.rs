@@ -21,5 +21,5 @@ pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;
 pub const JWT_EXPT: i64 = 60 * 60 * 24;
 
 // 鉴权路由
-pub const NO_AUTH_ROUTERS: [&str; 2] = ["/api/auth/login", "/api/auth/verify"];
+pub const NO_AUTH_ROUTERS: [&str; 2] = ["/api/auth/nonce", "/api/auth/verify"];
 pub const SVC_AUTH_TOKEN: &str = "f2jv330PCK564jKsIZ6I7Y8jiOW83Jw5SsbmJZe9LOz2bglVz0eHA99LtG22c1U6";

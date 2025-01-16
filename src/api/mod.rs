@@ -13,7 +13,7 @@ pub fn router() -> Router<AppState> {
         .nest(
             "/auth",
             Router::new()
-                .route("/login", get(auth::view::login))
+                .route("/nonce", get(auth::view::nonce))
                 .route("/verify", post(auth::view::verify))
                 .route("/logout", post(auth::view::logout))
                 .route("/userinfo", get(auth::view::userinfo)),

@@ -11,7 +11,7 @@ use crate::core::state::ReqContext;
 
 static COOKIE_NAME: &str = "nonce";
 
-pub async fn login() -> LibResult<impl IntoResponse> {
+pub async fn nonce() -> LibResult<impl IntoResponse> {
     let rsp = logic::nonce().await?;
     tracing::info!("wallet_login, rsp {:?}", rsp);
 

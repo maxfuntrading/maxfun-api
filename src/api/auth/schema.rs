@@ -9,7 +9,7 @@ pub struct NonceRsp {
 pub struct VerifyReq {
     pub message: String,
     pub signature: String,
-    pub chain_id: u32,
+    pub chain_id: Option<u32>,
     pub source: Option<String>,
 }
 

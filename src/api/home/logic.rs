@@ -1,8 +1,8 @@
-use sea_orm::{EntityTrait, QueryOrder, QueryFilter, Condition, ColumnTrait};
-use super::schema;
-use crate::core::state::AppState;
-use crate::entity::{self, TagInfo, EvtTradeLog, TokenInfo};
-use crate::utility::*;
+use sea_orm::{EntityTrait, QueryOrder, QueryFilter, Condition, ColumnTrait, PaginatorTrait};
+use crate::core::AppState;
+use super::schema::{self, SortField, SortOrder};
+use crate::entity::{self, token_info, token_summary, EvtTradeLog, TagInfo};
+use crate::utility::LibResult;
 
 pub async fn get_token_tags(app_state: AppState) -> LibResult<schema::TokenTagListResp> {
     let tags = TagInfo::find()
@@ -48,54 +48,85 @@ pub async fn get_token_list(
 ) -> LibResult<schema::TokenListResp> {
     let mut condition = Condition::all();
 
+    // 基础过滤条件
     if let Some(keyword) = query.keyword {
         condition = condition.add(
             Condition::any()
-                .add(entity::token_info::Column::TokenAddress.contains(&keyword))
-                .add(entity::token_info::Column::Name.contains(&keyword))
-                .add(entity::token_info::Column::Symbol.contains(&keyword))
+                .add(token_info::Column::TokenAddress.contains(&keyword))
+                .add(token_info::Column::Name.contains(&keyword))
+                .add(token_info::Column::Symbol.contains(&keyword))
         );
     }
 
     if let Some(tag) = query.tag {
-        condition = condition.add(entity::token_info::Column::Tag.eq(tag));
+        condition = condition.add(token_info::Column::Tag.eq(tag));
     }
 
     if let Some(is_launched) = query.is_launched {
-        condition = condition.add(entity::token_info::Column::IsLaunched.eq(is_launched));
+        condition = condition.add(token_info::Column::IsLaunched.eq(is_launched));
     }
 
-    let tokens = TokenInfo::find()
-        .filter(condition)
-        .order_by_desc(entity::token_info::Column::CreateTs)
-        .all(&app_state.db_pool)
-        .await?;
+    // 构建查询
+    let mut query_builder = token_info::Entity::find()
+        .find_also_related(token_summary::Entity)
+        .filter(condition);
+
+    // 排序处理
+    match query.sort_by {
+        Some(SortField::LaunchTs) => {
+            query_builder = match query.sort_order.unwrap_or(SortOrder::Desc) {
+                SortOrder::Asc => query_builder.order_by_asc(token_info::Column::LaunchTs),
+                SortOrder::Desc => query_builder.order_by_desc(token_info::Column::LaunchTs),
+            };
+        }
+        Some(SortField::VolumeRate24h) => {
+            query_builder = match query.sort_order.unwrap_or(SortOrder::Desc) {
+                SortOrder::Asc => query_builder.order_by_asc(token_summary::Column::VolumeRate24h),
+                SortOrder::Desc => query_builder.order_by_desc(token_summary::Column::VolumeRate24h),
+            };
+        }
+        Some(SortField::MarketCap) => {
+            query_builder = match query.sort_order.unwrap_or(SortOrder::Desc) {
+                SortOrder::Asc => query_builder.order_by_asc(token_summary::Column::MarketCap),
+                SortOrder::Desc => query_builder.order_by_desc(token_summary::Column::MarketCap),
+            };
+        }
+        Some(SortField::LastTrade) => {
+            query_builder = match query.sort_order.unwrap_or(SortOrder::Desc) {
+                SortOrder::Asc => query_builder.order_by_asc(token_summary::Column::LastTradeTs),
+                SortOrder::Desc => query_builder.order_by_desc(token_summary::Column::LastTradeTs),
+            };
+        }
+        None => {
+            query_builder = query_builder.order_by_desc(token_info::Column::CreateTs);
+        }
+    }
+
+    // 分页处理
+    let page = query.page.unwrap_or(1);
+    let page_size = query.page_size.unwrap_or(20);
+    let paginator = query_builder.paginate(&app_state.db_pool, page_size);
+    
+    // 获取总数
+    let total = paginator.num_items().await?;
+    
+    // 获取当前页数据
+    let tokens = paginator.fetch_page(page - 1).await?;
 
     let list = tokens
         .into_iter()
-        .map(|token| schema::TokenInfo {
+        .map(|(token, summary)| schema::TokenInfo {
             token_address: token.token_address,
+            icon: token.icon,
+            tag: token.tag,
             user_address: token.user_address,
             name: token.name,
-            icon: token.icon,
             symbol: token.symbol,
             description: token.description,
-            tag: token.tag,
-            website: token.website,
-            twitter: token.twitter,
-            telegram: token.telegram,
-            total_supply: token.total_supply,
-            raised_token: token.raised_token,
-            raised_amount: token.raised_amount,
-            sale_ratio: token.sale_ratio,
-            reserved_ratio: token.reserved_ratio,
-            pool_ratio: token.pool_ratio,
-            launch_ts: token.launch_ts,
-            maxbuy_amount: token.maxbuy_amount,
-            create_ts: token.create_ts,
+            market_cap: summary.as_ref().and_then(|s| s.market_cap),
             is_launched: token.is_launched,
         })
         .collect();
 
-    Ok(schema::TokenListResp { list })
+    Ok(schema::TokenListResp { list, total })
 }

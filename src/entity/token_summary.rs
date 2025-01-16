@@ -14,9 +14,19 @@ pub struct Model {
     pub total_supply: Option<Decimal>,
     pub market_cap: Option<Decimal>,
     pub uniswap_pool: Option<String>,
+    pub last_trade_ts: Option<i64>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(belongs_to = "super::token_info::Entity", from = "Column::TokenAddress", to = "super::token_info::Column::TokenAddress")]
+    TokenInfo,
+}
+
+impl Related<super::token_info::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::TokenInfo.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {} 
