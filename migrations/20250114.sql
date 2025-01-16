@@ -22,6 +22,19 @@ CREATE TABLE raised_token
     icon      VARCHAR(255),
     create_ts BIGINT
 );
+INSERT INTO raised_token (address, name, symbol, decimal, icon, create_ts)
+VALUES ('0x0f2D719407FdBeFF09D87557AbB7232601FD9F29', -- MAX token address
+        'Maxity',
+        'MAX',
+        18,
+        'https://example.com/max.png', -- MAX token icon URL
+        EXTRACT(EPOCH FROM NOW())),
+       ('0xdAC17F958D2ee523a2206206994597C13D831ec7', -- USDT token address
+        'Tether USD',
+        'USDT',
+        6,
+        'https://example.com/usdt.png', -- USDT token icon URL
+        EXTRACT(EPOCH FROM NOW()));
 
 CREATE TABLE token_info
 (
@@ -69,31 +82,58 @@ CREATE TABLE user_avatar
     create_ts BIGINT
 );
 
-INSERT INTO tag_info (name, sort, create_ts) VALUES ('Ai', 1, EXTRACT(EPOCH FROM NOW()));
-INSERT INTO tag_info (name, sort, create_ts) VALUES ('Game', 2, EXTRACT(EPOCH FROM NOW()));
-INSERT INTO tag_info (name, sort, create_ts) VALUES ('Defi', 3, EXTRACT(EPOCH FROM NOW()));
-INSERT INTO tag_info (name, sort, create_ts) VALUES ('De-Sci', 4, EXTRACT(EPOCH FROM NOW()));
-INSERT INTO tag_info (name, sort, create_ts) VALUES ('Social', 5, EXTRACT(EPOCH FROM NOW()));
-INSERT INTO tag_info (name, sort, create_ts) VALUES ('Depin', 6, EXTRACT(EPOCH FROM NOW()));
-INSERT INTO tag_info (name, sort, create_ts) VALUES ('Others', 7, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts)
+VALUES ('Ai', 1, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts)
+VALUES ('Game', 2, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts)
+VALUES ('Defi', 3, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts)
+VALUES ('De-Sci', 4, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts)
+VALUES ('Social', 5, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts)
+VALUES ('Depin', 6, EXTRACT(EPOCH FROM NOW()));
+INSERT INTO tag_info (name, sort, create_ts)
+VALUES ('Others', 7, EXTRACT(EPOCH FROM NOW()));
 
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('1.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('2.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('3.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('4.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('5.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('6.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('7.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('8.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('9.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('10.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('11.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('12.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('13.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('14.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('15.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('16.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('17.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('18.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('19.svg', EXTRACT(EPOCH FROM NOW()));
-INSERT INTO user_avatar (avatar, create_ts) VALUES ('20.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('1.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('2.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('3.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('4.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('5.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('6.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('7.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('8.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('9.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('10.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('11.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('12.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('13.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('14.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('15.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('16.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('17.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('18.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('19.svg', EXTRACT(EPOCH FROM NOW()));
+INSERT INTO user_avatar (avatar, create_ts)
+VALUES ('20.svg', EXTRACT(EPOCH FROM NOW()));
