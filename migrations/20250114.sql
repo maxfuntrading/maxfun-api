@@ -23,20 +23,20 @@ CREATE TABLE raised_token
     price     DECIMAL(40, 18),
     create_ts BIGINT
 );
-INSERT INTO raised_token (address, name, symbol, decimal, icon, create_ts)
+INSERT INTO raised_token (address, name, symbol, decimal, icon, price,create_ts)
 VALUES ('0x0f2D719407FdBeFF09D87557AbB7232601FD9F29', -- MAX token address
         'Maxity',
         'MAX',
         18,
         '/icon/cf228750-d8b8-43f6-aa89-965930820bf7.png', -- MAX token icon URL
-        '1'
+        '1',
         EXTRACT(EPOCH FROM NOW())),
        ('0xdAC17F958D2ee523a2206206994597C13D831ec7', -- USDT token address
         'Tether USD',
         'USDT',
         6,
         '/icon/cf228750-d8b8-43f6-aa89-965930820bf7.png', -- USDT token icon URL
-           '1'
+           '1',
         EXTRACT(EPOCH FROM NOW()));
 
 CREATE TABLE token_info
