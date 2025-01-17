@@ -9,6 +9,7 @@ pub struct Model {
     pub symbol: String,
     pub decimal: i32,
     pub icon: Option<String>,
+    pub price: Decimal,
     pub create_ts: i64,
 }
 

@@ -30,7 +30,7 @@ pub enum Relation {}
 impl ActiveModelBehavior for ActiveModel {}
 
 impl Entity {
-    pub async fn find_latest_trades(db: &DatabaseConnection) -> LibResult<Vec<(String, i32, String, Decimal, Option<String>, String, String)>> {
+    pub async fn find_latest_trades(db: &DatabaseConnection) -> LibResult<Vec<(String, i32, String, Decimal, String, String, Option<String>)>> {
         let stmt = Statement::from_string(
             db.get_database_backend(),
             r#"
@@ -59,9 +59,9 @@ impl Entity {
                     row.try_get::<i32>("", "trace_type")?,
                     row.try_get::<String>("", "token_address")?,
                     row.try_get::<Decimal>("", "amount")?,
-                    row.try_get::<Option<String>>("", "icon")?,
+                    row.try_get::<String>("", "icon")?,
                     row.try_get::<String>("", "symbol")?,
-                    row.try_get::<String>("", "tag")?,
+                    row.try_get::<Option<String>>("", "tag")?,
                 ))
             })
             .collect::<Result<Vec<_>, DbErr>>()?;

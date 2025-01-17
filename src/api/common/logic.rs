@@ -37,13 +37,14 @@ pub async fn get_raised_tokens(app_state: AppState) -> LibResult<schema::RaisedT
             symbol: token.symbol,
             decimal: token.decimal,
             icon: token.icon.map(|i| format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), i)),
+            price: token.price,
         })
         .collect();
 
     Ok(schema::RaisedTokenListResp { list })
 }
 
-pub async fn upload_icon(app_state: AppState, file_name: String, content_type: String, bytes: Vec<u8>) -> LibResult<schema::UploadImageResp> {
+pub async fn upload_icon(app_state: AppState, file_name: String, content_type: String, bytes: Vec<u8>) -> LibResult<schema::UploadIconResp> {
     // 验证文件大小
     if bytes.len() > consts::MAX_UPLOAD_SIZE {
         return Err(LibError::FileTooLarge);
@@ -76,5 +77,5 @@ pub async fn upload_icon(app_state: AppState, file_name: String, content_type: S
 
     // 返回访问 URL
     let url = format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), key);
-    Ok(schema::UploadImageResp { url })
+    Ok(schema::UploadIconResp { url })
 }

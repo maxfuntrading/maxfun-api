@@ -1,3 +1,4 @@
+use rust_decimal::Decimal;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -18,6 +19,7 @@ pub struct RaisedToken {
     pub symbol: String,
     pub decimal: i32,
     pub icon: Option<String>,
+    pub price: Decimal,
 }
 
 #[derive(Debug, Serialize)]
@@ -26,6 +28,6 @@ pub struct RaisedTokenListResp {
 }
 
 #[derive(Debug, Serialize)]
-pub struct UploadImageResp {
+pub struct UploadIconResp {
     pub url: String,
 }
