@@ -9,7 +9,6 @@ use crate::core::state::AppState;
 use crate::utility::*;
 use crate::entity::User;
 use crate::entity::UserAvatar;
-use crate::core::consts;
 
 pub async fn nonce() -> LibResult<schema::NonceRsp> {
     Ok(schema::NonceRsp {

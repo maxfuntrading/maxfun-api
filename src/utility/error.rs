@@ -56,4 +56,16 @@ pub enum LibError {
 
     #[error("User Not Found")]
     UserNotFound,
+
+    #[error("Upload failed")]
+    UploadFailed,
+
+    #[error("File too large")]
+    FileTooLarge,
+
+    #[error("Invalid file type")]
+    InvalidFileType,
+
+    #[error("No file uploaded")]
+    NoFileUploaded,
 }

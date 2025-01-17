@@ -15,7 +15,7 @@ pub async fn get_user_info(
 
     let avatar = user
         .avatar
-        .map(|avatar_path| format!("{}{}", consts::S3_AVATAR_URI.as_str(), avatar_path));
+        .map(|avatar_path| format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), avatar_path));
 
     Ok(schema::UserInfoResp {
         address: user.address,
@@ -65,7 +65,7 @@ pub async fn get_token_created(
     }
 
     // 构建查询
-    let mut query_builder = token_info::Entity::find()
+    let query_builder = token_info::Entity::find()
         .find_also_related(token_summary::Entity)
         .filter(condition);
 

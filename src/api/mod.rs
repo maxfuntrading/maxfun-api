@@ -23,7 +23,9 @@ pub fn router() -> Router<AppState> {
         .nest(
             "/common",
             Router::new()
-                .route("/tag", get(common::view::get_tags)),
+                .route("/tag", get(common::view::get_tags))
+                .route("/raised-token", get(common::view::get_raised_token))
+                .route("/upload-icon", post(common::view::upload_icon)),
         )
 
         .nest(
