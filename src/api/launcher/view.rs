@@ -1,5 +1,5 @@
 use axum::{Extension, Json};
-use axum::extract::State;
+use axum::extract::{Query, State};
 use axum::response::IntoResponse;
 use crate::core::AppState;
 use crate::core::state::ReqContext;
@@ -77,5 +77,13 @@ pub async fn launch_token(
     
     // 调用业务逻辑
     let rsp = logic::launch_token(app_state, ctx.user_addr, payload).await?;
+    Ok(Resp200::new(rsp))
+}
+
+pub async fn get_raised_token_price(
+    State(app_state): State<AppState>,
+    Query(params): Query<schema::GetRaisedTokenPriceQuery>,
+) -> LibResult<impl IntoResponse> {
+    let rsp = logic::get_raised_token_price(&app_state, &params.raised_token).await?;
     Ok(Resp200::new(rsp))
 }

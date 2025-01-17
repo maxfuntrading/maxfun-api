@@ -25,3 +25,8 @@ pub struct LaunchTokenResp{
     pub id: String,
     pub signature: String,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct GetRaisedTokenPriceQuery{
+    pub raised_token: String,
+}

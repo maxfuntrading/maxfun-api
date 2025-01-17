@@ -47,5 +47,6 @@ pub fn router() -> Router<AppState> {
             "/launcher",
             Router::new()
                 .route("/launch-token", post(launcher::view::launch_token))
+                .route("/raised-token-price", get(launcher::view::get_raised_token_price))
         )
 }
