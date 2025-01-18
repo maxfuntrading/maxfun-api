@@ -60,8 +60,8 @@ pub async fn launch_token(
     
     let message_hash = keccak256(message);
 
-    // 获取钱包并签名
-    let wallet = get_wallet(consts::CREATOR_ADDRESS.as_str(), consts::CREATOR_PASSWORD.as_str()).await?;
+    // 直接使用私钥创建钱包
+    let wallet = consts::EOA_PRIVATE_KEY.parse::<LocalWallet>()?;
     
     let signature = wallet.sign_message(&message_hash).await?;
     
@@ -71,26 +71,26 @@ pub async fn launch_token(
     })
 }
 
-async fn get_wallet(address: &str, password: &str) -> LibResult<LocalWallet> {
-    let keystore_path = PathBuf::from(consts::KEYSTORE_DIR.as_str());
-    // 处理地址格式
-    let clean_address = address.trim_start_matches("0x").to_lowercase();
-    // 读取目录下的所有文件
-    let entries = fs::read_dir(&keystore_path)
-    .map_err(|e| LibError::ParamError(format!("Failed to read keystore directory: {}", e)))?;
-    // 查找匹配地址的 keystore 文件
-    let keystore_file = entries
-        .filter_map(Result::ok)
-        .find(|entry| {
-            entry.file_name()
-                .to_string_lossy()
-                .to_lowercase()
-                .ends_with(&clean_address)
-        })
-        .ok_or_else(|| LibError::ParamError("Keystore file not found".to_string()))?;
-    // 使用 ethers 内置的 Wallet::decrypt_keystore
-    let wallet = Wallet::decrypt_keystore(keystore_file.path(), password)
-        .map_err(|e| LibError::ParamError(format!("Failed to decrypt keystore: {}", e)))?;
-
-    Ok(wallet)
-}
+// async fn get_wallet(address: &str, password: &str) -> LibResult<LocalWallet> {
+//     let keystore_path = PathBuf::from(consts::KEYSTORE_DIR.as_str());
+//     // 处理地址格式
+//     let clean_address = address.trim_start_matches("0x").to_lowercase();
+//     // 读取目录下的所有文件
+//     let entries = fs::read_dir(&keystore_path)
+//     .map_err(|e| LibError::ParamError(format!("Failed to read keystore directory: {}", e)))?;
+//     // 查找匹配地址的 keystore 文件
+//     let keystore_file = entries
+//         .filter_map(Result::ok)
+//         .find(|entry| {
+//             entry.file_name()
+//                 .to_string_lossy()
+//                 .to_lowercase()
+//                 .ends_with(&clean_address)
+//         })
+//         .ok_or_else(|| LibError::ParamError("Keystore file not found".to_string()))?;
+//     // 使用 ethers 内置的 Wallet::decrypt_keystore
+//     let wallet = Wallet::decrypt_keystore(keystore_file.path(), password)
+//         .map_err(|e| LibError::ParamError(format!("Failed to decrypt keystore: {}", e)))?;
+//
+//     Ok(wallet)
+// }

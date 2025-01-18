@@ -28,12 +28,10 @@ pub static AWS_S3_ENDPOINT: Lazy<String> =
 // 链相关配置
 pub static CHAIN_ID: Lazy<i64> = 
     Lazy::new(|| std::env::var("CHAIN_ID").unwrap_or_else(|_| "1".to_string()).parse().unwrap_or(1));
-pub static KEYSTORE_DIR: Lazy<String> =
-    Lazy::new(|| std::env::var("KEYSTORE_DIR").expect("env not found KEYSTORE_DIR"));
-pub static CREATOR_ADDRESS: Lazy<String> =
-    Lazy::new(|| std::env::var("CREATOR_ADDRESS").expect("env not found CREATOR_ADDRESS"));
-pub static CREATOR_PASSWORD: Lazy<String> =
-    Lazy::new(|| std::env::var("CREATOR_PASSWORD").expect("env not found CREATOR_PASSWORD"));
+pub static EOA_PRIVATE_KEY: Lazy<String> =
+    Lazy::new(|| std::env::var("EOA_PRIVATE_KEY").expect("env not found EOA_PRIVATE_KEY"));
+// pub static KEYSTORE_DIR: Lazy<String> =
+//     Lazy::new(|| std::env::var("KEYSTORE_DIR").expect("env not found KEYSTORE_DIR"));
 
 // jwt 有效时长
 pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;
