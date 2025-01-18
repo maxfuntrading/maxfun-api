@@ -2,25 +2,14 @@ use serde::{Deserialize, Serialize};
 use rust_decimal::Decimal;
 
 #[derive(Debug, Serialize)]
-pub struct TokenTag {
-    pub name: String,
-    pub sort: i32,
-}
-
-#[derive(Debug, Serialize)]
-pub struct TokenTagListResp {
-    pub list: Vec<TokenTag>,
-}
-
-#[derive(Debug, Serialize)]
 pub struct MarqueeItem {
     pub user_address: String,
     pub trade_type: i32,  // 0: buy, 1: sell
     pub token_address: String,
     pub amount: Decimal,
-    pub icon: Option<String>,
+    pub icon: String,
     pub symbol: String,
-    pub tag: String,
+    pub tag: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -58,12 +47,12 @@ pub struct TokenListQuery {
 #[derive(Debug, Serialize)]
 pub struct TokenInfo {
     pub token_address: String,
-    pub icon: Option<String>,
-    pub tag: String,
-    pub user_address: Option<String>,  // Create By
+    pub icon: String,
+    pub tag: Option<String>,
+    pub user_address: String,  // Create By
     pub name: String,                  // Token Name
     pub symbol: String,                // Token Symbol
-    pub description: Option<String>,
+    pub description: String,
     pub market_cap: Option<Decimal>,
     pub is_launched: bool,             // Listed on Uniswap
 }

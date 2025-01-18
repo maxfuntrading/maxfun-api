@@ -40,7 +40,7 @@ CREATE TABLE token_summary
     total_supply   DECIMAL(40, 18),
     market_cap     DECIMAL(40, 18),
     uniswap_pool   VARCHAR(255),
-    last_trade_ts  BIGINT,
+    last_trade_ts  BIGINT
 );
 
 CREATE TABLE evt_trade_log

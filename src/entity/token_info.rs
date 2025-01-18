@@ -7,23 +7,22 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = true)]
     pub id: i32,
     pub token_address: String,
-    pub user_address: Option<String>,// 代币创建者
+    pub user_address: String,// 代币创建者
     pub name: String,// 代币全称
-    pub icon: Option<String>,
+    pub icon: String,
     pub symbol: String, // 代币缩写
-    pub description: Option<String>,
-    pub tag: String,
+    pub description: String,
+    pub tag: Option<String>,
     pub website: Option<String>,
     pub twitter: Option<String>,
     pub telegram: Option<String>,
     pub total_supply: Option<Decimal>, // 代币总量
-    pub raised_token: Option<String>,
+    pub raised_token: String,
     pub raised_amount: Option<Decimal>,
     pub sale_ratio: Option<Decimal>,
     pub reserved_ratio: Option<Decimal>,
     pub pool_ratio: Option<Decimal>,
     pub launch_ts: Option<i64>, // 代币开启外盘时间
-    pub maxbuy_amount: Option<Decimal>, // 单次最大购买数量
     pub create_ts: i64, // 代币创建时间
     pub is_launched: bool, // 代币是否开启外盘
 }

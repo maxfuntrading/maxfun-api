@@ -1,5 +1,6 @@
 use ethers::prelude::{Http, Provider};
 use thiserror::Error;
+use ethers::signers::WalletError;
 
 #[derive(Error, Debug)]
 pub enum LibError {
@@ -56,4 +57,19 @@ pub enum LibError {
 
     #[error("User Not Found")]
     UserNotFound,
+
+    #[error("Upload failed")]
+    UploadFailed,
+
+    #[error("File too large")]
+    FileTooLarge,
+
+    #[error("Invalid file type")]
+    InvalidFileType,
+
+    #[error("No file uploaded")]
+    NoFileUploaded,
+
+    #[error("wallet error: {0}")]
+    WalletError(#[from] WalletError),
 }

@@ -8,10 +8,10 @@ mod auth;
 mod home;
 mod profile;
 mod launcher;
+mod common;
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        // Auth routes group
         .nest(
             "/auth",
             Router::new()
@@ -19,14 +19,22 @@ pub fn router() -> Router<AppState> {
                 .route("/verify", post(auth::view::verify))
                 .route("/logout", post(auth::view::logout)),
         )
-        // Home routes group
+
+        .nest(
+            "/common",
+            Router::new()
+                .route("/tag", get(common::view::get_tags))
+                .route("/raised-token", get(common::view::get_raised_token))
+                .route("/upload-icon", post(common::view::upload_icon)),
+        )
+
         .nest(
             "/home",
             Router::new()
                 .route("/marquee", get(home::view::get_marquee))
                 .route("/token-list", get(home::view::get_token_list))
-                .route("/token-tag", get(home::view::get_token_tags)),
         )
+
         .nest(
             "/profile",
             Router::new()
@@ -34,9 +42,11 @@ pub fn router() -> Router<AppState> {
                 .route("/token-owned", get(profile::view::get_token_owned))
                 .route("/token-created", get(profile::view::get_token_created)),
         )
+
         .nest(
             "/launcher",
             Router::new()
                 .route("/launch-token", post(launcher::view::launch_token))
+                .route("/raised-token-price", get(launcher::view::get_raised_token_price))
         )
 }

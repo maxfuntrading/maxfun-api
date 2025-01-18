@@ -1,4 +1,4 @@
-use axum::extract::{Json, State, Extension};
+use axum::extract::{Json, State};
 use axum::http::{header::SET_COOKIE, HeaderMap};
 use axum::response::IntoResponse;
 use axum_extra::{headers, TypedHeader};
@@ -7,7 +7,6 @@ use super::logic;
 use super::schema;
 use crate::core::state::AppState;
 use crate::utility::{LibError, LibResult, Resp200};
-use crate::core::state::ReqContext;
 
 static COOKIE_NAME: &str = "nonce";
 

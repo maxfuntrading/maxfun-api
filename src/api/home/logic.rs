@@ -1,25 +1,8 @@
-use sea_orm::{EntityTrait, QueryOrder, QueryFilter, Condition, ColumnTrait, PaginatorTrait};
-use crate::core::AppState;
 use super::schema::{self, SortField, SortOrder};
-use crate::entity::{self, token_info, token_summary, EvtTradeLog, TagInfo};
+use crate::core::AppState;
+use crate::entity::{token_info, token_summary, EvtTradeLog};
 use crate::utility::LibResult;
-
-pub async fn get_token_tags(app_state: AppState) -> LibResult<schema::TokenTagListResp> {
-    let tags = TagInfo::find()
-        .order_by_asc(entity::tag_info::Column::Sort)
-        .all(&app_state.db_pool)
-        .await?;
-
-    let list = tags
-        .into_iter()
-        .map(|tag| schema::TokenTag {
-            name: tag.name,
-            sort: tag.sort,
-        })
-        .collect();
-
-    Ok(schema::TokenTagListResp { list })
-}
+use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 
 pub async fn get_marquee(app_state: AppState) -> LibResult<schema::MarqueeListResp> {
     let trades = EvtTradeLog::find_latest_trades(&app_state.db_pool).await?;

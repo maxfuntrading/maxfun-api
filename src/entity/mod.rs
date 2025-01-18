@@ -18,3 +18,4 @@ pub use user_avatar::Entity as UserAvatar;
 pub use tag_info::Entity as TagInfo;
 pub use evt_trade_log::Entity as EvtTradeLog;
 pub use user_summary::Entity as UserSummary;
+pub use raised_token::Entity as RaisedToken;
