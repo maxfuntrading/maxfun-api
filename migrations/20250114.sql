@@ -63,7 +63,7 @@ CREATE TABLE token_info
     is_launched    BOOLEAN
 );
 
-CREATE UNIQUE INDEX idx_token_address_unique ON token_info (token_address);
+CREATE INDEX idx_token_address ON token_info (token_address);
 
 CREATE TABLE token_comment
 (

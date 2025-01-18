@@ -25,6 +25,16 @@ pub static AWS_SECRET_ACCESS_KEY: Lazy<String> =
 pub static AWS_S3_ENDPOINT: Lazy<String> =
     Lazy::new(|| std::env::var("AWS_S3_ENDPOINT").expect("env not found AWS_S3_ENDPOINT"));
 
+// 链相关配置
+pub static CHAIN_ID: Lazy<i64> = 
+    Lazy::new(|| std::env::var("CHAIN_ID").unwrap_or_else(|_| "1".to_string()).parse().unwrap_or(1));
+pub static KEYSTORE_DIR: Lazy<String> =
+    Lazy::new(|| std::env::var("KEYSTORE_DIR").expect("env not found KEYSTORE_DIR"));
+pub static CREATOR_ADDRESS: Lazy<String> =
+    Lazy::new(|| std::env::var("CREATOR_ADDRESS").expect("env not found CREATOR_ADDRESS"));
+pub static CREATOR_PASSWORD: Lazy<String> =
+    Lazy::new(|| std::env::var("CREATOR_PASSWORD").expect("env not found CREATOR_PASSWORD"));
+
 // jwt 有效时长
 pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;
 // jwt 快过期时长
@@ -37,3 +47,6 @@ pub const SVC_AUTH_TOKEN: &str = "f2jv330PCK564jKsIZ6I7Y8jiOW83Jw5SsbmJZe9LOz2bg
 // 文件上传相关配置
 pub const MAX_UPLOAD_SIZE: usize = 4 * 1024 * 1024; // 5MB
 pub const ALLOWED_IMAGE_TYPES: [&str; 4] = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+
+// 募资相关配置
+pub const MIN_RAISED_AMOUNT_USD: i64 = 2000;  // 最小募资金额 (USD)

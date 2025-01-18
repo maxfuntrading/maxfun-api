@@ -1,7 +1,7 @@
 use axum::{Extension, Json};
 use axum::extract::{Query, State};
 use axum::response::IntoResponse;
-use crate::core::AppState;
+use crate::core::{AppState, consts};
 use crate::core::state::ReqContext;
 use crate::utility::{LibError, LibResult, Resp200};
 use crate::api::launcher::{schema, logic};
@@ -17,18 +17,18 @@ fn validate_url(url: &Option<String>) -> LibResult<()> {
 
 async fn validate_token_request(app_state: &AppState, req: &schema::LaunchTokenReq) -> LibResult<()> {
     // 验证 Token Name
-    if req.name.len() > 20 || !req.name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace()) {
-        return Err(LibError::ParamError("String must contain at most 20 character(s)".to_string()));
+    if req.name.chars().count() > 20 || !req.name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace()) {
+        return Err(LibError::ParamError("Token name must contain at most 20 characters".to_string()));
     }
 
     // 验证 Token Symbol
-    if req.symbol.len() > 10 || !req.symbol.chars().all(|c| c.is_alphanumeric()) {
-        return Err(LibError::ParamError("String must contain at most 10 character(s)".to_string()));
+    if req.symbol.chars().count() > 10 || !req.symbol.chars().all(|c| c.is_alphanumeric()) {
+        return Err(LibError::ParamError("Token symbol must contain at most 10 characters".to_string()));
     }
 
-    // 验证 Description
-    if req.description.len() > 256 {
-        return Err(LibError::ParamError("String must contain at most 256 character(s)".to_string()));
+    // 验证描述长度（字符数）
+    if req.description.chars().count() > 256 {
+        return Err(LibError::ParamError("Description must contain at most 256 characters".to_string()));
     }
 
     // 验证 URLs
@@ -59,8 +59,8 @@ async fn validate_token_request(app_state: &AppState, req: &schema::LaunchTokenR
     // 验证 raised amount
     if let Some(raised_amount) = req.raised_amount {
         let price = logic::get_raised_token_price(app_state, &req.raised_token).await?;
-        if raised_amount * price < Decimal::new(2000, 0) {
-            return Err(LibError::ParamError("The minimum amount needs to be greater than $2,000".to_string()));
+        if raised_amount * price < Decimal::new(consts::MIN_RAISED_AMOUNT_USD, 0) {
+            return Err(LibError::ParamError(format!("The minimum amount needs to be greater than ${}", consts::MIN_RAISED_AMOUNT_USD)));
         }
     }
 
