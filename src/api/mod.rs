@@ -9,6 +9,7 @@ mod home;
 mod profile;
 mod launcher;
 mod common;
+mod detail;
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -48,5 +49,10 @@ pub fn router() -> Router<AppState> {
             Router::new()
                 .route("/launch-token", post(launcher::view::launch_token))
                 .route("/raised-token-price", get(launcher::view::get_raised_token_price))
+        )
+
+        .nest("/detail",
+        Router::new()
+            .route("",get("/detail/index.html"))
         )
 }
