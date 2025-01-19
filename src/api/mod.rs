@@ -51,8 +51,13 @@ pub fn router() -> Router<AppState> {
                 .route("/raised-token-price", get(launcher::view::get_raised_token_price))
         )
 
-        .nest("/detail",
+        .nest("/token/detail",
         Router::new()
-            .route("",get("/detail/index.html"))
+            .route("/basic-info", get(detail::view::basic_info))
+            .route("/kline", get(detail::view::kline))
+            .route("/comment-history", get(detail::view::comment_history))
+            .route("/comment-submit", post(detail::view::comment_submit))
+            .route("/trade-log", get(detail::view::trade_log))
+            .route("/holder-distribution", get(detail::view::holder_distribution))
         )
 }
