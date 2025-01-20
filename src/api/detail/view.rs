@@ -39,9 +39,9 @@ pub async fn trade_log(
     let rsp = logic::get_trade_log(
         &app_state,
         &params.token_address,
-        params.last_block_time,
         params.last_block_number,
         params.last_txn_index,
+        params.last_log_index,
         params.limit,
     ).await?;
     Ok(Resp200::new(rsp))

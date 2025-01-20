@@ -38,8 +38,11 @@ async fn validate_token_request(app_state: &AppState, req: &schema::LaunchTokenR
 
     // 验证 Total Supply
     if let Some(total_supply) = req.total_supply {
-        if total_supply < Decimal::new(1_000_000, 0) {
-            return Err(LibError::ParamError("The minimum amount needs to be greater than 1,000,000".to_string()));
+        if total_supply < Decimal::new((*consts::MIN_TOKEN_TOTAL_SUPPLY).into(), 0) {
+            return Err(LibError::ParamError(format!(
+                "The minimum total supply needs to be greater than {:?}",
+                consts::MIN_TOKEN_TOTAL_SUPPLY
+            )));
         }
     }
 
@@ -59,8 +62,8 @@ async fn validate_token_request(app_state: &AppState, req: &schema::LaunchTokenR
     // 验证 raised amount
     if let Some(raised_amount) = req.raised_amount {
         let price = logic::get_raised_token_price(app_state, &req.raised_token).await?;
-        if raised_amount * price < Decimal::new(consts::MIN_RAISED_AMOUNT_USD, 0) {
-            return Err(LibError::ParamError(format!("The minimum amount needs to be greater than ${}", consts::MIN_RAISED_AMOUNT_USD)));
+        if raised_amount * price < Decimal::new((*consts::MIN_RAISED_AMOUNT_USD).into(), 0) {
+            return Err(LibError::ParamError(format!("The minimum amount needs to be greater than ${:?}", consts::MIN_RAISED_AMOUNT_USD)));
         }
     }
 

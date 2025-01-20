@@ -51,21 +51,24 @@ pub struct KlineResp {
 #[derive(Debug, Deserialize)]
 pub struct TradeLogQuery {
     pub token_address: String,
-    pub last_block_time: Option<i64>,     // 区块时间
-    pub last_block_number: Option<i64>,    // 区块号
-    pub last_txn_index: Option<i64>,       // 交易索引
+    pub last_block_number: Option<i64>,
+    pub last_txn_index: Option<i64>,
+    pub last_log_index:Option<i64>,
     pub limit: Option<u64>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct TradeLogData {
+    pub block_number: i64,
+    pub txn_index: i64,
+    pub log_index: i64,
     pub user_address: String,
     pub trace_type: i32,      // 1: buy, 2: sell
-    pub token1_amount: Decimal,
-    pub token2_amount: Decimal,
+    pub token0: String,
+    pub amount0: Decimal,
+    pub token1: String,
+    pub amount1: Decimal,
     pub block_time: i64,
-    pub block_number: i64,    // 区块号
-    pub txn_index: i64,       // 交易索引
     pub txn_hash: String,
 }
 

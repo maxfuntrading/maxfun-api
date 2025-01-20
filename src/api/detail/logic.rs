@@ -77,39 +77,39 @@ pub async fn get_kline(
 pub async fn get_trade_log(
     app_state: &AppState,
     token_address: &str,
-    last_block_time: Option<i64>,
     last_block_number: Option<i64>,
     last_txn_index: Option<i64>,
+    last_log_index: Option<i64>,
     limit: Option<u64>,
 ) -> LibResult<schema::TradeLogResp> {
     let mut query = evt_trade_log::Entity::find()
         .filter(evt_trade_log::Column::TokenAddress.eq(token_address));
 
-    // 使用 block_time 作为主要排序，block_number 和 txn_index 作为游标
-    if let (Some(block_time), Some(block_num), Some(txn_idx)) = 
-        (last_block_time, last_block_number, last_txn_index) {
+    // 使用复合主键作为游标
+    if let (Some(block_num), Some(txn_idx), Some(log_idx)) = 
+        (last_block_number, last_txn_index, last_log_index) {
         query = query.filter(
             Condition::any()
-                .add(evt_trade_log::Column::BlockTime.lt(block_time))
+                .add(evt_trade_log::Column::BlockNumber.lt(block_num))
                 .add(
                     Condition::all()
-                        .add(evt_trade_log::Column::BlockTime.eq(block_time))
-                        .add(evt_trade_log::Column::BlockNumber.lt(block_num))
+                        .add(evt_trade_log::Column::BlockNumber.eq(block_num))
+                        .add(evt_trade_log::Column::TxnIndex.lt(txn_idx))
                 )
                 .add(
                     Condition::all()
-                        .add(evt_trade_log::Column::BlockTime.eq(block_time))
                         .add(evt_trade_log::Column::BlockNumber.eq(block_num))
-                        .add(evt_trade_log::Column::TxnIndex.lt(txn_idx))
+                        .add(evt_trade_log::Column::TxnIndex.eq(txn_idx))
+                        .add(evt_trade_log::Column::LogIndex.lt(log_idx))
                 )
         );
     }
 
-    // 按时间、区块号、交易索引排序
+    // 按主键排序
     let trades = query
-        .order_by_desc(evt_trade_log::Column::BlockTime)
         .order_by_desc(evt_trade_log::Column::BlockNumber)
         .order_by_desc(evt_trade_log::Column::TxnIndex)
+        .order_by_desc(evt_trade_log::Column::LogIndex)
         .limit(limit.unwrap_or(20))
         .all(&app_state.db_pool)
         .await?;
@@ -117,13 +117,16 @@ pub async fn get_trade_log(
     let list = trades
         .into_iter()
         .map(|trade| schema::TradeLogData {
-            user_address: trade.user_address,
-            trace_type: trade.trace_type,
-            token1_amount: trade.amount0,
-            token2_amount: trade.amount1,
-            block_time: trade.block_time,
             block_number: trade.block_number,
             txn_index: trade.txn_index,
+            log_index: trade.log_index,
+            user_address: trade.user_address,
+            trace_type: trade.trace_type,
+            token0: trade.token0,
+            amount0: trade.amount0,
+            token1: trade.token1,
+            amount1: trade.amount1,
+            block_time: trade.block_time,
             txn_hash: trade.txn_hash,
         })
         .collect();

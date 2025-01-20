@@ -30,8 +30,18 @@ pub static CHAIN_ID: Lazy<i64> =
     Lazy::new(|| std::env::var("CHAIN_ID").unwrap_or_else(|_| "1".to_string()).parse().unwrap_or(1));
 pub static EOA_PRIVATE_KEY: Lazy<String> =
     Lazy::new(|| std::env::var("EOA_PRIVATE_KEY").expect("env not found EOA_PRIVATE_KEY"));
-// pub static KEYSTORE_DIR: Lazy<String> =
-//     Lazy::new(|| std::env::var("KEYSTORE_DIR").expect("env not found KEYSTORE_DIR"));
+
+// 最小募资金额 (USD)
+pub static MIN_RAISED_AMOUNT_USD: Lazy<i64> =
+    Lazy::new(|| std::env::var("MIN_RAISED_AMOUNT_USD").unwrap_or_else(|_| "2000".to_string()).parse().unwrap_or(2000));
+
+// 代币发行最小总量
+pub static MIN_TOKEN_TOTAL_SUPPLY: Lazy<i64> =
+    Lazy::new(|| std::env::var("MIN_TOKEN_TOTAL_SUPPLY").unwrap_or_else(|_| "1000000".to_string()).parse().unwrap_or(1000000));
+
+// 代币默认发行总量
+pub static DEFAULT_TOKEN_TOTAL_SUPPLY: Lazy<i64> =
+    Lazy::new(|| std::env::var("DEFAULT_TOKEN_TOTAL_SUPPLY").unwrap_or_else(|_| "1000000".to_string()).parse().unwrap_or(1000000));
 
 // jwt 有效时长
 pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;
@@ -45,6 +55,3 @@ pub const SVC_AUTH_TOKEN: &str = "f2jv330PCK564jKsIZ6I7Y8jiOW83Jw5SsbmJZe9LOz2bg
 // 文件上传相关配置
 pub const MAX_UPLOAD_SIZE: usize = 4 * 1024 * 1024; // 5MB
 pub const ALLOWED_IMAGE_TYPES: [&str; 4] = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-
-// 募资相关配置
-pub const MIN_RAISED_AMOUNT_USD: i64 = 2000;  // 最小募资金额 (USD)
