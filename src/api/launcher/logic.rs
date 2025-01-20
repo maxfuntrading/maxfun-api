@@ -4,12 +4,11 @@ use crate::entity::{token_info, RaisedToken};
 use crate::utility::{LibError, LibResult};
 use chrono::Utc;
 use ethers::{
-    signers::{LocalWallet, Signer, Wallet},
+    signers::{LocalWallet, Signer},
     utils::keccak256,
 };
 use rust_decimal::Decimal;
 use sea_orm::{ActiveModelTrait, EntityTrait, NotSet, Set};
-use std::{path::PathBuf, fs};
 
 pub async fn get_raised_token_price(app_state: &AppState, token_address: &str) -> LibResult<Decimal> {
     let raised_token = RaisedToken::find_by_id(token_address)
@@ -38,7 +37,9 @@ pub async fn launch_token(
         website: Set(req.website),
         twitter: Set(req.twitter),
         telegram: Set(req.telegram),
-        total_supply: Set(req.total_supply),
+        total_supply: Set(Some(req.total_supply.unwrap_or_else(|| 
+            Decimal::new((*consts::DEFAULT_TOKEN_TOTAL_SUPPLY).into(), 0)
+        ))),
         raised_token: Set(req.raised_token),
         raised_amount: Set(req.raised_amount),
         sale_ratio: Set(req.sale_ratio),
@@ -70,27 +71,3 @@ pub async fn launch_token(
         signature: signature.to_string(),
     })
 }
-
-// async fn get_wallet(address: &str, password: &str) -> LibResult<LocalWallet> {
-//     let keystore_path = PathBuf::from(consts::KEYSTORE_DIR.as_str());
-//     // 处理地址格式
-//     let clean_address = address.trim_start_matches("0x").to_lowercase();
-//     // 读取目录下的所有文件
-//     let entries = fs::read_dir(&keystore_path)
-//     .map_err(|e| LibError::ParamError(format!("Failed to read keystore directory: {}", e)))?;
-//     // 查找匹配地址的 keystore 文件
-//     let keystore_file = entries
-//         .filter_map(Result::ok)
-//         .find(|entry| {
-//             entry.file_name()
-//                 .to_string_lossy()
-//                 .to_lowercase()
-//                 .ends_with(&clean_address)
-//         })
-//         .ok_or_else(|| LibError::ParamError("Keystore file not found".to_string()))?;
-//     // 使用 ethers 内置的 Wallet::decrypt_keystore
-//     let wallet = Wallet::decrypt_keystore(keystore_file.path(), password)
-//         .map_err(|e| LibError::ParamError(format!("Failed to decrypt keystore: {}", e)))?;
-//
-//     Ok(wallet)
-// }
