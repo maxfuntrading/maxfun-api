@@ -49,6 +49,31 @@ pub struct KlineResp {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct CommentHistoryQuery {
+    pub token_address: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CommentHistoryData {
+    pub id: i32,
+    pub user_address: String,
+    pub comment: String,
+    pub create_ts: i64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CommentHistoryResp {
+    pub list: Vec<CommentHistoryData>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CommentSubmitReq {
+    pub token_address: String,
+    pub comment: String,
+}
+
+
+#[derive(Debug, Deserialize)]
 pub struct TradeLogQuery {
     pub token_address: String,
     pub last_block_number: Option<i64>,

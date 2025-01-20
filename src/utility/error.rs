@@ -72,4 +72,7 @@ pub enum LibError {
 
     #[error("wallet error: {0}")]
     WalletError(#[from] WalletError),
+
+    #[error("Comment failed, please try again")]
+    CommentFailed,
 }
