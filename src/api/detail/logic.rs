@@ -1,11 +1,12 @@
 use crate::api::detail::schema;
 use crate::core::AppState;
-use crate::entity::{evt_trade_log, kline_5m, token_info, token_summary, token_comment};
+use crate::entity::{evt_trade_log, kline_5m, token_info, token_summary, token_comment, user_summary};
 use crate::utility::{LibError, LibResult};
-use sea_orm::{ColumnTrait, Condition, EntityTrait, QueryFilter, QueryOrder, QuerySelect, ActiveModelTrait};
+use sea_orm::{ColumnTrait, Condition, EntityTrait, QueryFilter, QueryOrder, QuerySelect, ActiveModelTrait, PaginatorTrait};
 use chrono::Utc;
 use sea_orm::NotSet;
 use sea_orm::Set;
+use rust_decimal::Decimal;
 
 pub async fn get_basic_info(
     app_state: AppState,
@@ -83,11 +84,24 @@ pub async fn get_kline(
 pub async fn comment_history(
     app_state: AppState,
     token_address: &str,
+    page: Option<u64>,
+    page_size: Option<u64>,
 ) -> LibResult<schema::CommentHistoryResp> {
+    let page = page.unwrap_or(1);
+    let page_size = page_size.unwrap_or(20);
+    
+    // 计算总数
+    let total = token_comment::Entity::find()
+        .filter(token_comment::Column::TokenAddress.eq(token_address))
+        .count(&app_state.db_pool)
+        .await?;
+
+    // 获取分页数据
     let comments = token_comment::Entity::find()
         .filter(token_comment::Column::TokenAddress.eq(token_address))
         .order_by_desc(token_comment::Column::CreateTs)
-        .limit(20)
+        .offset(((page - 1) * page_size) as u64)
+        .limit(page_size)
         .all(&app_state.db_pool)
         .await?;
 
@@ -101,7 +115,7 @@ pub async fn comment_history(
         })
         .collect();
 
-    Ok(schema::CommentHistoryResp { list })
+    Ok(schema::CommentHistoryResp { list, total })
 }
 
 pub async fn comment_submit(
@@ -185,4 +199,60 @@ pub async fn get_trade_log(
         .collect();
 
     Ok(schema::TradeLogResp { list })
+}
+
+pub async fn holder_distribution(
+    app_state: AppState,
+    token_address: &str,
+    page: Option<u64>,
+    page_size: Option<u64>,
+) -> LibResult<schema::HolderDistributionResp> {
+    let page = page.unwrap_or(1);
+    let page_size = page_size.unwrap_or(20);
+
+    // 获取总供应量
+    let token = token_summary::Entity::find()
+        .filter(token_summary::Column::TokenAddress.eq(token_address))
+        .one(&app_state.db_pool)
+        .await?
+        .ok_or_else(|| LibError::ParamError("Token not found".to_string()))?;
+
+    let total_supply = token.total_supply.unwrap_or_default();
+
+    // 获取持有者总数
+    let total_holders = user_summary::Entity::find()
+        .filter(user_summary::Column::TokenAddress.eq(token_address))
+        .count(&app_state.db_pool)
+        .await?;
+
+    // 获取持有者列表
+    let holders = user_summary::Entity::find()
+        .filter(user_summary::Column::TokenAddress.eq(token_address))
+        .order_by_desc(user_summary::Column::Amount)
+        .offset(((page - 1) * page_size) as u64)
+        .limit(page_size)
+        .all(&app_state.db_pool)
+        .await?;
+
+    let list = holders
+        .into_iter()
+        .map(|holder| {
+            let percentage = if total_supply > Decimal::ZERO {
+                (holder.amount * Decimal::new(100, 0)) / total_supply
+            } else {
+                Decimal::ZERO
+            };
+
+            schema::HolderData {
+                user_address: holder.user_address,
+                amount: holder.amount,
+                percentage,
+            }
+        })
+        .collect();
+
+    Ok(schema::HolderDistributionResp {
+        total_holders,
+        list,
+    })
 }

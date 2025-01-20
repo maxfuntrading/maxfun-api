@@ -51,6 +51,8 @@ pub struct KlineResp {
 #[derive(Debug, Deserialize)]
 pub struct CommentHistoryQuery {
     pub token_address: String,
+    pub page: Option<u64>,        // 页码，从1开始
+    pub page_size: Option<u64>,   // 每页大小
 }
 
 #[derive(Debug, Serialize)]
@@ -64,6 +66,7 @@ pub struct CommentHistoryData {
 #[derive(Debug, Serialize)]
 pub struct CommentHistoryResp {
     pub list: Vec<CommentHistoryData>,
+    pub total: u64,               // 总记录数
 }
 
 #[derive(Debug, Deserialize)]
@@ -100,4 +103,24 @@ pub struct TradeLogData {
 #[derive(Debug, Serialize)]
 pub struct TradeLogResp {
     pub list: Vec<TradeLogData>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct HolderDistributionQuery {
+    pub token_address: String,
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct HolderData {
+    pub user_address: String,      // 钱包地址
+    pub amount: Decimal,           // 持有数量
+    pub percentage: Decimal,       // 持有占比
+}
+
+#[derive(Debug, Serialize)]
+pub struct HolderDistributionResp {
+    pub total_holders: u64,        // 持有者总数
+    pub list: Vec<HolderData>,     // 持有者列表
 }

@@ -30,7 +30,13 @@ pub async fn comment_history(
     State(app_state): State<AppState>,
     Query(params): Query<schema::CommentHistoryQuery>,
 ) -> LibResult<impl IntoResponse> {
-    let rsp = logic::comment_history(app_state, &params.token_address).await?;
+    let rsp = logic::comment_history(
+        app_state,
+        &params.token_address,
+        params.page,
+        params.page_size,
+    )
+    .await?;
     Ok(Resp200::new(rsp))
 }
 
@@ -74,6 +80,14 @@ pub async fn trade_log(
 
 pub async fn holder_distribution(
     State(app_state): State<AppState>,
+    Query(params): Query<schema::HolderDistributionQuery>,
 ) -> LibResult<impl IntoResponse> {
-    Ok("")
+    let rsp = logic::holder_distribution(
+        app_state,
+        &params.token_address,
+        params.page,
+        params.page_size,
+    )
+    .await?;
+    Ok(Resp200::new(rsp))
 }
