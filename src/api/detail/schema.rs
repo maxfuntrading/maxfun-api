@@ -59,6 +59,7 @@ pub struct CommentHistoryQuery {
 pub struct CommentHistoryData {
     pub id: i32,
     pub user_address: String,
+    pub user_avatar: Option<String>,
     pub comment: String,
     pub create_ts: i64,
 }
@@ -92,16 +93,16 @@ pub struct TradeLogData {
     pub log_index: i64,
     pub user_address: String,
     pub trace_type: i32,      // 1: buy, 2: sell
-    pub token0: String,
-    pub amount0: Decimal,
-    pub token1: String,
-    pub amount1: Decimal,
+    pub token1_amount: Decimal,  // agent token amount
+    pub token2_amount: Decimal,  // raised token amount
     pub block_time: i64,
     pub txn_hash: String,
 }
 
 #[derive(Debug, Serialize)]
 pub struct TradeLogResp {
+    pub token1_name: String,      // agent token name
+    pub token2_name: String,      // raised token name
     pub list: Vec<TradeLogData>,
 }
 
