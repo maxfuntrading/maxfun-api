@@ -21,7 +21,7 @@ pub struct MarqueeListResp {
 #[serde(rename_all = "snake_case")]
 pub enum SortField {
     LaunchTs,
-    VolumeRate24h,
+    Volume24h,
     MarketCap,
     LastTrade,
 }
@@ -54,6 +54,7 @@ pub struct TokenInfo {
     pub symbol: String,                // Token Symbol
     pub description: String,
     pub market_cap: Option<Decimal>,
+    pub bonding_curve: Option<Decimal>,
     pub is_launched: bool,             // Listed on Uniswap
 }
 

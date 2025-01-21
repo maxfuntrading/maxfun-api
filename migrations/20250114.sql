@@ -63,7 +63,7 @@ CREATE TABLE token_info
     is_launched    BOOLEAN
 );
 
-CREATE INDEX idx_token_address ON token_info (token_address);
+CREATE INDEX idx_info_token_address ON token_info (token_address);
 
 CREATE TABLE token_comment
 (
@@ -74,8 +74,8 @@ CREATE TABLE token_comment
     create_ts     BIGINT
 );
 
-CREATE INDEX idx_token_address ON token_comment (token_address);
-CREATE INDEX idx_user_address ON token_comment (user_address);
+CREATE INDEX idx_comment_token_address ON token_comment (token_address);
+CREATE INDEX idx_comment_user_address ON token_comment (user_address);
 
 CREATE TABLE user_avatar
 (

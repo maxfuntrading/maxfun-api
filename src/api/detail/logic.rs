@@ -33,7 +33,7 @@ pub async fn get_basic_info(
         price_rate24h: summary.as_ref().and_then(|s| s.price_rate24h),
         market_cap: summary.as_ref().and_then(|s| s.market_cap),
         liquidity: summary.as_ref().and_then(|s| s.liquidity),
-        volume24h: summary.as_ref().and_then(|s| s.volume_rate24h),
+        volume24h: summary.as_ref().and_then(|s| s.volume_24h),
         total_supply: token.total_supply,
         description: token.description,
         tag: token.tag,

@@ -9,10 +9,11 @@ pub struct Model {
     pub raised_token: Option<String>,
     pub price: Option<Decimal>,
     pub price_rate24h: Option<Decimal>,
-    pub volume_rate24h: Option<Decimal>,
+    pub volume_24h: Option<Decimal>,
     pub liquidity: Option<Decimal>,
     pub total_supply: Option<Decimal>,
     pub market_cap: Option<Decimal>,
+    pub bonding_curve: Option<Decimal>,
     pub uniswap_pool: Option<String>,
     pub last_trade_ts: Option<i64>,
 }
