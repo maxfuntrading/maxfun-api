@@ -31,16 +31,17 @@ CREATE INDEX idx_evt_token_log_token_address ON evt_token_log (token_address);
 
 CREATE TABLE token_summary
 (
-    token_address  CHAR(42) PRIMARY KEY,
-    raised_token   CHAR(42),
-    price          DECIMAL(40, 18),
-    price_rate24h  DECIMAL(3, 2),
-    volume_rate24h DECIMAL(3, 2),
-    liquidity      DECIMAL(40, 18),
-    total_supply   DECIMAL(40, 18),
-    market_cap     DECIMAL(40, 18),
-    uniswap_pool   VARCHAR(255),
-    last_trade_ts  BIGINT
+    token_address CHAR(42) PRIMARY KEY,
+    raised_token  CHAR(42),
+    price         DECIMAL(40, 18),
+    price_rate24h DECIMAL(3, 2),
+    volume_24h    DECIMAL(40, 18),
+    liquidity     DECIMAL(40, 18),
+    total_supply  DECIMAL(40, 18),
+    market_cap    DECIMAL(40, 18),
+    bonding_curve DECIMAL(4, 2),
+    uniswap_pool  VARCHAR(255),
+    last_trade_ts BIGINT
 );
 
 CREATE TABLE evt_trade_log

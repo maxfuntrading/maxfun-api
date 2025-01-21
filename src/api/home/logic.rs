@@ -62,10 +62,10 @@ pub async fn get_token_list(
                 SortOrder::Desc => query_builder.order_by_desc(token_info::Column::LaunchTs),
             };
         }
-        Some(SortField::VolumeRate24h) => {
+        Some(SortField::Volume24h) => {
             query_builder = match query.sort_order.unwrap_or(SortOrder::Desc) {
-                SortOrder::Asc => query_builder.order_by_asc(token_summary::Column::VolumeRate24h),
-                SortOrder::Desc => query_builder.order_by_desc(token_summary::Column::VolumeRate24h),
+                SortOrder::Asc => query_builder.order_by_asc(token_summary::Column::Volume24h),
+                SortOrder::Desc => query_builder.order_by_desc(token_summary::Column::Volume24h),
             };
         }
         Some(SortField::MarketCap) => {
@@ -107,6 +107,7 @@ pub async fn get_token_list(
             symbol: token.symbol,
             description: token.description,
             market_cap: summary.as_ref().and_then(|s| s.market_cap),
+            bonding_curve: summary.as_ref().and_then(|s| s.bonding_curve),
             is_launched: token.is_launched,
         })
         .collect();
