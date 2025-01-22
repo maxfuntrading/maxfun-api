@@ -22,7 +22,7 @@ pub struct LaunchTokenReq{
 
 #[derive(Debug, Serialize)]
 pub struct LaunchTokenResp{
-    pub id: String,
+    pub id: i32,
     pub signature: String,
 }
 

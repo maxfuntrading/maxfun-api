@@ -79,7 +79,7 @@ pub async fn launch_token(
     let signature = wallet.sign_message(&message_hash).await?;
     
     Ok(schema::LaunchTokenResp {
-        id: token.id.to_string(),
+        id: token.id,
         signature: format!("0x{}", signature.to_string()),
     })
 }
