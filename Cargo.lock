@@ -3118,6 +3118,7 @@ dependencies = [
  "csv",
  "dotenvy",
  "ethers",
+ "hex",
  "itertools 0.12.1",
  "jsonwebtoken 9.3.0",
  "once_cell",

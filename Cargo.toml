@@ -43,3 +43,4 @@ aws-sdk-s3 = "1.52.0"
 aws-credential-types = "1.2.1"
 uuid = { version = "1.10.0", features = ["v4"] }
 url = "2.5.2"
+hex = "0.4.3"
