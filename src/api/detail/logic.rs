@@ -5,7 +5,7 @@ use crate::entity::{
     evt_trade_log, kline_5m, raised_token, token_comment, token_info, token_summary, user,
     user_summary,
 };
-use crate::utility::{LibError, LibResult};
+use crate::utility::{LibError, LibResult, with_domain};
 use chrono::Utc;
 use rust_decimal::Decimal;
 use sea_orm::NotSet;
@@ -35,7 +35,7 @@ pub async fn get_basic_info(
     Ok(schema::BasicInfoResp {
         name: token.name,
         symbol: token.symbol,
-        icon: token.icon,
+        icon: with_domain(&token.icon),
         price: summary.price,
         price_rate24h: summary.price_rate24h,
         market_cap: summary.market_cap,
@@ -119,9 +119,7 @@ pub async fn comment_history(
         .map(|(comment, user)| schema::CommentHistoryData {
             id: comment.id,
             user_address: comment.user_address,
-            user_avatar: user.map_or_else(String::new, |u| {
-                format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), u.avatar)
-            }),
+            user_avatar: user.map_or_else(String::new, |u| with_domain(&u.avatar)),
             comment: comment.comment,
             create_ts: comment.create_ts,
         })

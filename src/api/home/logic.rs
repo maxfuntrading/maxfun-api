@@ -1,7 +1,7 @@
 use super::schema::{self, SortField, SortOrder};
 use crate::core::AppState;
 use crate::entity::{token_info, token_summary, EvtTradeLog};
-use crate::utility::LibResult;
+use crate::utility::{LibResult, with_domain};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 
 pub async fn get_marquee(app_state: AppState) -> LibResult<schema::MarqueeListResp> {
@@ -16,7 +16,7 @@ pub async fn get_marquee(app_state: AppState) -> LibResult<schema::MarqueeListRe
                     trade_type,
                     token_address,
                     amount,
-                    icon,
+                    icon: with_domain(&icon),
                     symbol,
                     tag,
                 }
@@ -102,7 +102,7 @@ pub async fn get_token_list(
         .into_iter()
         .map(|(token, summary)| schema::TokenInfo {
             token_address: token.token_address,
-            icon: token.icon,
+            icon: with_domain(&token.icon),
             tag: token.tag,
             user_address: token.user_address,
             name: token.name,

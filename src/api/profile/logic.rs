@@ -1,7 +1,7 @@
 use crate::api::profile::schema;
 use crate::core::{consts, AppState};
 use crate::entity::{token_info, token_summary, User, UserSummary};
-use crate::utility::{LibError, LibResult};
+use crate::utility::{LibError, LibResult, with_domain};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
 
 pub async fn get_user_info(
@@ -13,12 +13,10 @@ pub async fn get_user_info(
         .await?
         .ok_or(LibError::UserNotFound)?;
 
-    let avatar = format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), user.avatar);
-
     Ok(schema::UserInfoResp {
         address: user.address,
         name: user.name,
-        avatar,
+        avatar: with_domain(&user.avatar),
         create_ts: user.create_ts,
     })
 }
@@ -37,7 +35,7 @@ pub async fn get_token_owned(
     let list = tokens
         .into_iter()
         .map(|(icon, symbol, quantity, value)| schema::TokenOwned {
-            token_icon: icon,
+            token_icon: with_domain(&icon),
             token_symbol: symbol,
             quantity,
             value,
@@ -84,7 +82,7 @@ pub async fn get_token_created(
         .into_iter()
         .map(|(token, summary)| schema::TokenInfo {
             token_address: token.token_address,
-            icon: token.icon,
+            icon: with_domain(&token.icon),
             tag: token.tag,
             user_address: token.user_address,
             name: token.name,

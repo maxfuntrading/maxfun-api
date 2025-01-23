@@ -1,7 +1,7 @@
 use crate::api::ranking::schema;
 use crate::core::AppState;
 use crate::entity::{token_info, token_summary};
-use crate::utility::LibResult;
+use crate::utility::{LibResult,with_domain};
 use sea_orm::{EntityTrait, JoinType, QueryOrder, QuerySelect, RelationTrait};
 
 const TOP_LIMIT: u64 = 10;
@@ -65,7 +65,7 @@ fn tokens_to_ranking_items(
             rank: (index + 1) as i32,
             token_address: token.token_address,
             name: token.name,
-            icon: token.icon,
+            icon: with_domain(&token.icon),
             market_cap: summary.as_ref().map(|s| s.market_cap).unwrap_or_default(),
             bonding_curve: summary
                 .as_ref()

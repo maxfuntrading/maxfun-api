@@ -20,28 +20,45 @@ pub static AWS_S3_BUCKET: Lazy<String> =
     Lazy::new(|| std::env::var("AWS_S3_BUCKET").expect("env not found AWS_S3_BUCKET"));
 pub static AWS_ACCESS_KEY_ID: Lazy<String> =
     Lazy::new(|| std::env::var("AWS_ACCESS_KEY_ID").expect("env not found AWS_ACCESS_KEY_ID"));
-pub static AWS_SECRET_ACCESS_KEY: Lazy<String> =
-    Lazy::new(|| std::env::var("AWS_SECRET_ACCESS_KEY").expect("env not found AWS_SECRET_ACCESS_KEY"));
+pub static AWS_SECRET_ACCESS_KEY: Lazy<String> = Lazy::new(|| {
+    std::env::var("AWS_SECRET_ACCESS_KEY").expect("env not found AWS_SECRET_ACCESS_KEY")
+});
 pub static AWS_S3_ENDPOINT: Lazy<String> =
     Lazy::new(|| std::env::var("AWS_S3_ENDPOINT").expect("env not found AWS_S3_ENDPOINT"));
 
 // 链相关配置
-pub static CHAIN_ID: Lazy<i64> = 
-    Lazy::new(|| std::env::var("CHAIN_ID").unwrap_or_else(|_| "1".to_string()).parse().unwrap_or(1));
+pub static CHAIN_ID: Lazy<i64> = Lazy::new(|| {
+    std::env::var("CHAIN_ID")
+        .unwrap_or_else(|_| "1".to_string())
+        .parse()
+        .unwrap_or(1)
+});
 pub static EOA_PRIVATE_KEY: Lazy<String> =
     Lazy::new(|| std::env::var("EOA_PRIVATE_KEY").expect("env not found EOA_PRIVATE_KEY"));
 
 // 最小募资金额 (USD)
-pub static MIN_RAISED_AMOUNT_USD: Lazy<i64> =
-    Lazy::new(|| std::env::var("MIN_RAISED_AMOUNT_USD").unwrap_or_else(|_| "2000".to_string()).parse().unwrap_or(2000));
+pub static MIN_RAISED_AMOUNT_USD: Lazy<i64> = Lazy::new(|| {
+    std::env::var("MIN_RAISED_AMOUNT_USD")
+        .unwrap_or_else(|_| "2000".to_string())
+        .parse()
+        .unwrap_or(2000)
+});
 
 // 代币发行最小总量
-pub static MIN_TOKEN_TOTAL_SUPPLY: Lazy<i64> =
-    Lazy::new(|| std::env::var("MIN_TOKEN_TOTAL_SUPPLY").unwrap_or_else(|_| "1000000".to_string()).parse().unwrap_or(1000000));
+pub static MIN_TOKEN_TOTAL_SUPPLY: Lazy<i64> = Lazy::new(|| {
+    std::env::var("MIN_TOKEN_TOTAL_SUPPLY")
+        .unwrap_or_else(|_| "1000000".to_string())
+        .parse()
+        .unwrap_or(1000000)
+});
 
 // 代币默认发行总量
-pub static DEFAULT_TOKEN_TOTAL_SUPPLY: Lazy<i64> =
-    Lazy::new(|| std::env::var("DEFAULT_TOKEN_TOTAL_SUPPLY").unwrap_or_else(|_| "1000000".to_string()).parse().unwrap_or(1000000));
+pub static DEFAULT_TOKEN_TOTAL_SUPPLY: Lazy<i64> = Lazy::new(|| {
+    std::env::var("DEFAULT_TOKEN_TOTAL_SUPPLY")
+        .unwrap_or_else(|_| "1000000".to_string())
+        .parse()
+        .unwrap_or(1000000)
+});
 
 // jwt 有效时长
 pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;
@@ -49,7 +66,21 @@ pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;
 pub const JWT_EXPT: i64 = 60 * 60 * 24;
 
 // 鉴权路由
-pub const NO_AUTH_ROUTERS: [&str; 2] = ["/api/auth/nonce", "/api/auth/verify"];
+pub const NO_AUTH_ROUTERS: [&str; 13] = [
+    "/api/auth/nonce",
+    "/api/auth/verify",
+    "/api/home/marquee",
+    "/api/home/token-list",
+    "/api/token/detail/basic-info",
+    "/api/token/detail/kline",
+    "/api/token/detail/comment-history",
+    "/api/token/detail/trade-log",
+    "/api/token/detail/holder-distribution",
+    "/api/ranking/process",
+    "/api/ranking/gainer",
+    "/api/ranking/market-cap",
+    "/api/ranking/trading-volume"
+];
 pub const SVC_AUTH_TOKEN: &str = "f2jv330PCK564jKsIZ6I7Y8jiOW83Jw5SsbmJZe9LOz2bglVz0eHA99LtG22c1U6";
 
 // 文件上传相关配置
