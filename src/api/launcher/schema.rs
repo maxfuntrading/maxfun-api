@@ -2,8 +2,8 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
-pub struct LaunchTokenReq{
-    pub name: String,// 代币全称
+pub struct LaunchTokenReq {
+    pub name: String, // 代币全称
     pub icon: String,
     pub symbol: String, // 代币缩写
     pub description: String,
@@ -21,12 +21,12 @@ pub struct LaunchTokenReq{
 }
 
 #[derive(Debug, Serialize)]
-pub struct LaunchTokenResp{
+pub struct LaunchTokenResp {
     pub id: i32,
     pub signature: String,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct GetRaisedTokenPriceQuery{
+pub struct GetRaisedTokenPriceQuery {
     pub raised_token: String,
 }

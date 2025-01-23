@@ -3,7 +3,7 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "token_comment")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = true)]
+    #[sea_orm(primary_key)]
     pub id: i32,
     pub token_address: String,
     pub user_address: String,

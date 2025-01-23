@@ -1,7 +1,7 @@
 use super::schema::{self, SortField, SortOrder};
 use crate::core::AppState;
 use crate::entity::{token_info, token_summary, EvtTradeLog};
-use crate::utility::LibResult;
+use crate::utility::{LibResult, with_domain};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 
 pub async fn get_marquee(app_state: AppState) -> LibResult<schema::MarqueeListResp> {
@@ -9,17 +9,19 @@ pub async fn get_marquee(app_state: AppState) -> LibResult<schema::MarqueeListRe
 
     let list = trades
         .into_iter()
-        .map(|(user_address, trade_type, token_address, amount, icon, symbol, tag)| {
-            schema::MarqueeItem {
-                user_address,
-                trade_type,
-                token_address,
-                amount,
-                icon,
-                symbol,
-                tag,
-            }
-        })
+        .map(
+            |(user_address, trade_type, token_address, amount, icon, symbol, tag)| {
+                schema::MarqueeItem {
+                    user_address,
+                    trade_type,
+                    token_address,
+                    amount,
+                    icon: with_domain(&icon),
+                    symbol,
+                    tag,
+                }
+            },
+        )
         .collect();
 
     Ok(schema::MarqueeListResp { list })
@@ -37,7 +39,7 @@ pub async fn get_token_list(
             Condition::any()
                 .add(token_info::Column::TokenAddress.contains(&keyword))
                 .add(token_info::Column::Name.contains(&keyword))
-                .add(token_info::Column::Symbol.contains(&keyword))
+                .add(token_info::Column::Symbol.contains(&keyword)),
         );
     }
 
@@ -89,10 +91,10 @@ pub async fn get_token_list(
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(20);
     let paginator = query_builder.paginate(&app_state.db_pool, page_size);
-    
+
     // 获取总数
     let total = paginator.num_items().await?;
-    
+
     // 获取当前页数据
     let tokens = paginator.fetch_page(page - 1).await?;
 
@@ -100,14 +102,17 @@ pub async fn get_token_list(
         .into_iter()
         .map(|(token, summary)| schema::TokenInfo {
             token_address: token.token_address,
-            icon: token.icon,
+            icon: with_domain(&token.icon),
             tag: token.tag,
             user_address: token.user_address,
             name: token.name,
             symbol: token.symbol,
             description: token.description,
-            market_cap: summary.as_ref().and_then(|s| s.market_cap),
-            bonding_curve: summary.as_ref().and_then(|s| s.bonding_curve),
+            market_cap: summary.as_ref().map(|s| s.market_cap).unwrap_or_default(),
+            bonding_curve: summary
+                .as_ref()
+                .map(|s| s.bonding_curve)
+                .unwrap_or_default(),
             is_launched: token.is_launched,
         })
         .collect();

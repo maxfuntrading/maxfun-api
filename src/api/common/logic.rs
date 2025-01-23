@@ -1,9 +1,9 @@
-use sea_orm::{EntityTrait, QueryOrder};
 use crate::api::common::schema;
 use crate::core::{consts, AppState};
-use crate::entity::{self, TagInfo, RaisedToken};
-use crate::utility::{LibError, LibResult};
+use crate::entity::{self, RaisedToken, TagInfo};
+use crate::utility::{with_domain, LibError, LibResult};
 use aws_sdk_s3::primitives::ByteStream;
+use sea_orm::{EntityTrait, QueryOrder};
 use uuid::Uuid;
 
 pub async fn get_tags(app_state: AppState) -> LibResult<schema::TagListResp> {
@@ -36,7 +36,7 @@ pub async fn get_raised_tokens(app_state: AppState) -> LibResult<schema::RaisedT
             name: token.name,
             symbol: token.symbol,
             decimal: token.decimal,
-            icon: token.icon.map(|i| format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), i)),
+            icon: with_domain(&token.icon),
             price: token.price,
         })
         .collect();
@@ -44,7 +44,12 @@ pub async fn get_raised_tokens(app_state: AppState) -> LibResult<schema::RaisedT
     Ok(schema::RaisedTokenListResp { list })
 }
 
-pub async fn upload_icon(app_state: AppState, file_name: String, content_type: String, bytes: Vec<u8>) -> LibResult<schema::UploadIconResp> {
+pub async fn upload_icon(
+    app_state: AppState,
+    file_name: String,
+    content_type: String,
+    bytes: Vec<u8>,
+) -> LibResult<schema::UploadIconResp> {
     // 验证文件大小
     if bytes.len() > consts::MAX_UPLOAD_SIZE {
         return Err(LibError::FileTooLarge);
@@ -76,6 +81,6 @@ pub async fn upload_icon(app_state: AppState, file_name: String, content_type: S
         })?;
 
     // 返回访问 URL
-    let url = format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), key);
+    let url = with_domain(&key);
     Ok(schema::UploadIconResp { url })
 }

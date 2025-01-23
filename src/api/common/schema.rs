@@ -18,7 +18,7 @@ pub struct RaisedToken {
     pub name: String,
     pub symbol: String,
     pub decimal: i32,
-    pub icon: Option<String>,
+    pub icon: String,
     pub price: Decimal,
 }
 

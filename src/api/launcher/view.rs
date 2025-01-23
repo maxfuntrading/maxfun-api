@@ -1,12 +1,12 @@
-use axum::{Extension, Json};
+use crate::api::launcher::{logic, schema};
+use crate::core::state::ReqContext;
+use crate::core::{consts, AppState};
+use crate::utility::{LibError, LibResult, Resp200};
 use axum::extract::{Query, State};
 use axum::response::IntoResponse;
-use crate::core::{AppState, consts};
-use crate::core::state::ReqContext;
-use crate::utility::{LibError, LibResult, Resp200};
-use crate::api::launcher::{schema, logic};
-use url::Url;
+use axum::{Extension, Json};
 use rust_decimal::Decimal;
+use url::Url;
 
 fn validate_url(url: &Option<String>) -> LibResult<()> {
     if let Some(url) = url {
@@ -15,20 +15,34 @@ fn validate_url(url: &Option<String>) -> LibResult<()> {
     Ok(())
 }
 
-async fn validate_token_request(app_state: &AppState, req: &schema::LaunchTokenReq) -> LibResult<()> {
+async fn validate_token_request(
+    app_state: &AppState,
+    req: &schema::LaunchTokenReq,
+) -> LibResult<()> {
     // 验证 Token Name
-    if req.name.chars().count() > 20 || !req.name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace()) {
-        return Err(LibError::ParamError("Token name must contain at most 20 characters".to_string()));
+    if req.name.chars().count() > 20
+        || !req
+            .name
+            .chars()
+            .all(|c| c.is_alphanumeric() || c.is_whitespace())
+    {
+        return Err(LibError::ParamError(
+            "Token name must contain at most 20 characters".to_string(),
+        ));
     }
 
     // 验证 Token Symbol
     if req.symbol.chars().count() > 10 || !req.symbol.chars().all(|c| c.is_alphanumeric()) {
-        return Err(LibError::ParamError("Token symbol must contain at most 10 characters".to_string()));
+        return Err(LibError::ParamError(
+            "Token symbol must contain at most 10 characters".to_string(),
+        ));
     }
 
     // 验证描述长度（字符数）
     if req.description.chars().count() > 256 {
-        return Err(LibError::ParamError("Description must contain at most 256 characters".to_string()));
+        return Err(LibError::ParamError(
+            "Description must contain at most 256 characters".to_string(),
+        ));
     }
 
     // 验证 URLs
@@ -49,12 +63,14 @@ async fn validate_token_request(app_state: &AppState, req: &schema::LaunchTokenR
     // 验证比例总和
     let sale_ratio = req.sale_ratio.unwrap_or(Decimal::new(80, 0));
     if sale_ratio < Decimal::new(60, 0) {
-        return Err(LibError::ParamError("Sales ratio must be at least 60%".to_string()));
+        return Err(LibError::ParamError(
+            "Sales ratio must be at least 60%".to_string(),
+        ));
     }
 
     let reserved_ratio = req.reserved_ratio.unwrap_or_default();
     let pool_ratio = req.pool_ratio.unwrap_or_default();
-    
+
     if sale_ratio + reserved_ratio + pool_ratio != Decimal::new(100, 0) {
         return Err(LibError::ParamError("Total ratio must be 100%".to_string()));
     }
@@ -63,7 +79,10 @@ async fn validate_token_request(app_state: &AppState, req: &schema::LaunchTokenR
     if let Some(raised_amount) = req.raised_amount {
         let price = logic::get_raised_token_price(app_state, &req.raised_token).await?;
         if raised_amount * price < Decimal::new((*consts::MIN_RAISED_AMOUNT_USD).into(), 0) {
-            return Err(LibError::ParamError(format!("The minimum amount needs to be greater than ${:?}", consts::MIN_RAISED_AMOUNT_USD)));
+            return Err(LibError::ParamError(format!(
+                "The minimum amount needs to be greater than ${:?}",
+                consts::MIN_RAISED_AMOUNT_USD
+            )));
         }
     }
 
@@ -77,7 +96,7 @@ pub async fn launch_token(
 ) -> LibResult<impl IntoResponse> {
     // 参数校验
     validate_token_request(&app_state, &payload).await?;
-    
+
     // 调用业务逻辑
     let rsp = logic::launch_token(app_state, ctx.user_addr, payload).await?;
     Ok(Resp200::new(rsp))

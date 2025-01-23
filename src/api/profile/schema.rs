@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct UserInfoResp {
     pub address: String,
     pub name: String,
-    pub avatar: Option<String>,
+    pub avatar: String,
     pub create_ts: i64,
 }
 
@@ -40,12 +40,12 @@ pub struct TokenCreatedQuery {
 pub struct TokenInfo {
     pub token_address: String,
     pub icon: String,
-    pub tag: Option<String>,
+    pub tag: String,
     pub user_address: String, // Create By
-    pub name: String,                 // Token Name
-    pub symbol: String,               // Token Symbol
+    pub name: String,         // Token Name
+    pub symbol: String,       // Token Symbol
     pub description: String,
-    pub market_cap: Option<Decimal>,
+    pub market_cap: Decimal,
     pub is_launched: bool, // Listed on Uniswap
 }
 

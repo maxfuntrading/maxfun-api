@@ -1,4 +1,5 @@
 use sea_orm::entity::prelude::*;
+use rust_decimal::Decimal;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "raised_token")]
@@ -8,7 +9,7 @@ pub struct Model {
     pub name: String,
     pub symbol: String,
     pub decimal: i32,
-    pub icon: Option<String>,
+    pub icon: String,
     pub price: Decimal,
     pub create_ts: i64,
 }

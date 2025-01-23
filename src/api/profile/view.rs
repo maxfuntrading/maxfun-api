@@ -1,10 +1,10 @@
-use axum::Extension;
+use crate::api::profile::{logic, schema};
+use crate::core::state::ReqContext;
+use crate::core::AppState;
+use crate::utility::{LibResult, Resp200};
 use axum::extract::{Query, State};
 use axum::response::IntoResponse;
-use crate::api::profile::{logic, schema};
-use crate::core::AppState;
-use crate::core::state::ReqContext;
-use crate::utility::{LibResult, Resp200};
+use axum::Extension;
 
 pub async fn userinfo(
     State(app_state): State<AppState>,
@@ -19,7 +19,7 @@ pub async fn get_token_owned(
     Extension(ctx): Extension<ReqContext>,
     Query(params): Query<schema::TokenOwnedQuery>,
 ) -> LibResult<impl IntoResponse> {
-let rsp = logic::get_token_owned(app_state, ctx.user_addr, params).await?;
+    let rsp = logic::get_token_owned(app_state, ctx.user_addr, params).await?;
     Ok(Resp200::new(rsp))
 }
 
@@ -28,6 +28,6 @@ pub async fn get_token_created(
     Extension(ctx): Extension<ReqContext>,
     Query(params): Query<schema::TokenCreatedQuery>,
 ) -> LibResult<impl IntoResponse> {
-let rsp = logic::get_token_created(app_state, ctx.user_addr, params).await?;
+    let rsp = logic::get_token_created(app_state, ctx.user_addr, params).await?;
     Ok(Resp200::new(rsp))
 }

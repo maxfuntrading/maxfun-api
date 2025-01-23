@@ -1,7 +1,7 @@
 use crate::api::profile::schema;
 use crate::core::{consts, AppState};
 use crate::entity::{token_info, token_summary, User, UserSummary};
-use crate::utility::{LibError, LibResult};
+use crate::utility::{LibError, LibResult, with_domain};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
 
 pub async fn get_user_info(
@@ -13,14 +13,10 @@ pub async fn get_user_info(
         .await?
         .ok_or(LibError::UserNotFound)?;
 
-    let avatar = user
-        .avatar
-        .map(|avatar_path| format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), avatar_path));
-
     Ok(schema::UserInfoResp {
         address: user.address,
         name: user.name,
-        avatar,
+        avatar: with_domain(&user.avatar),
         create_ts: user.create_ts,
     })
 }
@@ -32,12 +28,14 @@ pub async fn get_token_owned(
 ) -> LibResult<schema::TokenOwnedResp> {
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(20);
-    let tokens = UserSummary::find_token_owned(&app_state.db_pool, address, query.keyword, page,page_size).await?;
+    let tokens =
+        UserSummary::find_token_owned(&app_state.db_pool, address, query.keyword, page, page_size)
+            .await?;
 
     let list = tokens
         .into_iter()
         .map(|(icon, symbol, quantity, value)| schema::TokenOwned {
-            token_icon: icon,
+            token_icon: with_domain(&icon),
             token_symbol: symbol,
             quantity,
             value,
@@ -84,13 +82,13 @@ pub async fn get_token_created(
         .into_iter()
         .map(|(token, summary)| schema::TokenInfo {
             token_address: token.token_address,
-            icon: token.icon,
+            icon: with_domain(&token.icon),
             tag: token.tag,
             user_address: token.user_address,
             name: token.name,
             symbol: token.symbol,
             description: token.description,
-            market_cap: summary.as_ref().and_then(|s| s.market_cap),
+            market_cap: summary.as_ref().map(|s| s.market_cap).unwrap_or_default(),
             is_launched: token.is_launched,
         })
         .collect();
