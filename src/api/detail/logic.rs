@@ -1,13 +1,19 @@
 use crate::api::detail::schema;
+use crate::core::consts;
 use crate::core::AppState;
-use crate::entity::{evt_trade_log, kline_5m, token_info, token_summary, token_comment, user_summary, raised_token, user};
+use crate::entity::{
+    evt_trade_log, kline_5m, raised_token, token_comment, token_info, token_summary, user,
+    user_summary,
+};
 use crate::utility::{LibError, LibResult};
-use sea_orm::{ColumnTrait, Condition, EntityTrait, QueryFilter, QueryOrder, QuerySelect, ActiveModelTrait, PaginatorTrait};
 use chrono::Utc;
+use rust_decimal::Decimal;
 use sea_orm::NotSet;
 use sea_orm::Set;
-use rust_decimal::Decimal;
-use crate::core::consts;
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
+    QuerySelect,
+};
 
 pub async fn get_basic_info(
     app_state: AppState,
@@ -23,17 +29,18 @@ pub async fn get_basic_info(
     // 获取代币市场信息
     let summary = token_summary::Entity::find_by_id(token_address)
         .one(&app_state.db_pool)
-        .await?;
+        .await?
+        .ok_or_else(|| LibError::ParamError("Token summary not found".to_string()))?;
 
     Ok(schema::BasicInfoResp {
         name: token.name,
         symbol: token.symbol,
         icon: token.icon,
-        price: summary.as_ref().and_then(|s| s.price),
-        price_rate24h: summary.as_ref().and_then(|s| s.price_rate24h),
-        market_cap: summary.as_ref().and_then(|s| s.market_cap),
-        liquidity: summary.as_ref().and_then(|s| s.liquidity),
-        volume24h: summary.as_ref().and_then(|s| s.volume_24h),
+        price: summary.price,
+        price_rate24h: summary.price_rate24h,
+        market_cap: summary.market_cap,
+        liquidity: summary.liquidity,
+        volume24h: summary.volume_24h,
         total_supply: token.total_supply,
         description: token.description,
         tag: token.tag,
@@ -90,7 +97,7 @@ pub async fn comment_history(
 ) -> LibResult<schema::CommentHistoryResp> {
     let page = page.unwrap_or(1);
     let page_size = page_size.unwrap_or(20);
-    
+
     // 计算总数
     let total = token_comment::Entity::find()
         .filter(token_comment::Column::TokenAddress.eq(token_address))
@@ -99,7 +106,7 @@ pub async fn comment_history(
 
     // 获取分页数据
     let comments = token_comment::Entity::find()
-        .find_also_related(user::Entity)  // 关联查询用户表
+        .find_also_related(user::Entity) // 关联查询用户表
         .filter(token_comment::Column::TokenAddress.eq(token_address))
         .order_by_desc(token_comment::Column::CreateTs)
         .offset(((page - 1) * page_size) as u64)
@@ -112,8 +119,9 @@ pub async fn comment_history(
         .map(|(comment, user)| schema::CommentHistoryData {
             id: comment.id,
             user_address: comment.user_address,
-            user_avatar: user.and_then(|u| u.avatar)
-                .map(|avatar| format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), avatar)),
+            user_avatar: user.map_or_else(String::new, |u| {
+                format!("{}{}", consts::AWS_S3_ENDPOINT.as_str(), u.avatar)
+            }),
             comment: comment.comment,
             create_ts: comment.create_ts,
         })
@@ -166,8 +174,8 @@ pub async fn get_trade_log(
         .ok_or_else(|| LibError::ParamError("Raised token not found".to_string()))?;
 
     // 查询交易记录
-    let mut query = evt_trade_log::Entity::find()
-        .filter(evt_trade_log::Column::TokenAddress.eq(token_address));
+    let mut query =
+        evt_trade_log::Entity::find().filter(evt_trade_log::Column::TokenAddress.eq(token_address));
 
     // 使用复合主键作为游标
     match (last_block_number, last_txn_index, last_log_index) {
@@ -178,14 +186,14 @@ pub async fn get_trade_log(
                     .add(
                         Condition::all()
                             .add(evt_trade_log::Column::BlockNumber.eq(block_num))
-                            .add(evt_trade_log::Column::TxnIndex.lt(txn_idx))
+                            .add(evt_trade_log::Column::TxnIndex.lt(txn_idx)),
                     )
                     .add(
                         Condition::all()
                             .add(evt_trade_log::Column::BlockNumber.eq(block_num))
                             .add(evt_trade_log::Column::TxnIndex.eq(txn_idx))
-                            .add(evt_trade_log::Column::LogIndex.lt(log_idx))
-                    )
+                            .add(evt_trade_log::Column::LogIndex.lt(log_idx)),
+                    ),
             );
         }
         (None, None, None) => {}
@@ -243,7 +251,7 @@ pub async fn holder_distribution(
         .await?
         .ok_or_else(|| LibError::ParamError("Token not found".to_string()))?;
 
-    let total_supply = token.total_supply.unwrap_or_default();
+    let total_supply = token.total_supply;
 
     // 获取持有者总数
     let total_holders = user_summary::Entity::find()

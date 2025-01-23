@@ -2,7 +2,7 @@ use crate::api::ranking::schema;
 use crate::core::AppState;
 use crate::entity::{token_info, token_summary};
 use crate::utility::LibResult;
-use sea_orm::{EntityTrait, QueryOrder, QuerySelect, JoinType, RelationTrait};
+use sea_orm::{EntityTrait, JoinType, QueryOrder, QuerySelect, RelationTrait};
 
 const TOP_LIMIT: u64 = 10;
 
@@ -55,7 +55,9 @@ pub async fn get_volume_ranking(app_state: AppState) -> LibResult<schema::Rankin
 }
 
 // 辅助函数：将查询结果转换为排名项
-fn tokens_to_ranking_items(tokens: Vec<(token_info::Model, Option<token_summary::Model>)>) -> Vec<schema::RankingItem> {
+fn tokens_to_ranking_items(
+    tokens: Vec<(token_info::Model, Option<token_summary::Model>)>,
+) -> Vec<schema::RankingItem> {
     tokens
         .into_iter()
         .enumerate()
@@ -64,10 +66,16 @@ fn tokens_to_ranking_items(tokens: Vec<(token_info::Model, Option<token_summary:
             token_address: token.token_address,
             name: token.name,
             icon: token.icon,
-            market_cap: summary.as_ref().and_then(|s| s.market_cap),
-            bonding_curve: summary.as_ref().and_then(|s| s.bonding_curve),
-            price_rate24h: summary.as_ref().and_then(|s| s.price_rate24h),
-            volume_24h: summary.as_ref().and_then(|s| s.volume_24h),
+            market_cap: summary.as_ref().map(|s| s.market_cap).unwrap_or_default(),
+            bonding_curve: summary
+                .as_ref()
+                .map(|s| s.bonding_curve)
+                .unwrap_or_default(),
+            price_rate24h: summary
+                .as_ref()
+                .map(|s| s.price_rate24h)
+                .unwrap_or_default(),
+            volume_24h: summary.as_ref().map(|s| s.volume_24h).unwrap_or_default(),
         })
         .collect()
 }

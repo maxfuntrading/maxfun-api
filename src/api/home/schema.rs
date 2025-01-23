@@ -1,10 +1,10 @@
-use serde::{Deserialize, Serialize};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize)]
 pub struct MarqueeItem {
     pub user_address: String,
-    pub trade_type: i32,  // 0: buy, 1: sell
+    pub trade_type: i32, // 0: buy, 1: sell
     pub token_address: String,
     pub amount: Decimal,
     pub icon: String,
@@ -35,27 +35,27 @@ pub enum SortOrder {
 
 #[derive(Debug, Deserialize)]
 pub struct TokenListQuery {
-    pub keyword: Option<String>,     // search keyword
-    pub tag: Option<String>,         // tag filter
-    pub is_launched: Option<bool>,   // status
-    pub sort_by: Option<SortField>,  // sort field
+    pub keyword: Option<String>,       // search keyword
+    pub tag: Option<String>,           // tag filter
+    pub is_launched: Option<bool>,     // status
+    pub sort_by: Option<SortField>,    // sort field
     pub sort_order: Option<SortOrder>, // sort order
-    pub page: Option<u64>,           // page number, start from 1
-    pub page_size: Option<u64>,      // page size
+    pub page: Option<u64>,             // page number, start from 1
+    pub page_size: Option<u64>,        // page size
 }
 
 #[derive(Debug, Serialize)]
 pub struct TokenInfo {
     pub token_address: String,
     pub icon: String,
-    pub tag: Option<String>,
-    pub user_address: String,  // Create By
-    pub name: String,                  // Token Name
-    pub symbol: String,                // Token Symbol
+    pub tag: String,
+    pub user_address: String, // Create By
+    pub name: String,         // Token Name
+    pub symbol: String,       // Token Symbol
     pub description: String,
-    pub market_cap: Option<Decimal>,
-    pub bonding_curve: Option<Decimal>,
-    pub is_launched: bool,             // Listed on Uniswap
+    pub market_cap: Decimal,
+    pub bonding_curve: Decimal,
+    pub is_launched: bool, // Listed on Uniswap
 }
 
 #[derive(Debug, Serialize)]

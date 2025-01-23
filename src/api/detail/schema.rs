@@ -10,17 +10,17 @@ pub struct BasicInfoResp {
     pub name: String,
     pub symbol: String,
     pub icon: String,
-    pub price: Option<Decimal>,
-    pub price_rate24h: Option<Decimal>,
-    pub market_cap: Option<Decimal>,
-    pub liquidity: Option<Decimal>,
-    pub volume24h: Option<Decimal>,
-    pub total_supply: Option<Decimal>,
+    pub price: Decimal,
+    pub price_rate24h: Decimal,
+    pub market_cap: Decimal,
+    pub liquidity: Decimal,
+    pub volume24h: Decimal,
+    pub total_supply: Decimal,
     pub description: String,
-    pub tag: Option<String>,
-    pub website: Option<String>,
-    pub twitter: Option<String>,
-    pub telegram: Option<String>,
+    pub tag: String,
+    pub website: String,
+    pub twitter: String,
+    pub telegram: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -51,15 +51,15 @@ pub struct KlineResp {
 #[derive(Debug, Deserialize)]
 pub struct CommentHistoryQuery {
     pub token_address: String,
-    pub page: Option<u64>,        // 页码，从1开始
-    pub page_size: Option<u64>,   // 每页大小
+    pub page: Option<u64>,      // 页码，从1开始
+    pub page_size: Option<u64>, // 每页大小
 }
 
 #[derive(Debug, Serialize)]
 pub struct CommentHistoryData {
     pub id: i32,
     pub user_address: String,
-    pub user_avatar: Option<String>,
+    pub user_avatar: String,
     pub comment: String,
     pub create_ts: i64,
 }
@@ -67,7 +67,7 @@ pub struct CommentHistoryData {
 #[derive(Debug, Serialize)]
 pub struct CommentHistoryResp {
     pub list: Vec<CommentHistoryData>,
-    pub total: u64,               // 总记录数
+    pub total: u64, // 总记录数
 }
 
 #[derive(Debug, Deserialize)]
@@ -76,13 +76,12 @@ pub struct CommentSubmitReq {
     pub comment: String,
 }
 
-
 #[derive(Debug, Deserialize)]
 pub struct TradeLogQuery {
     pub token_address: String,
     pub last_block_number: Option<i64>,
     pub last_txn_index: Option<i64>,
-    pub last_log_index:Option<i64>,
+    pub last_log_index: Option<i64>,
     pub limit: Option<u64>,
 }
 
@@ -92,17 +91,17 @@ pub struct TradeLogData {
     pub txn_index: i64,
     pub log_index: i64,
     pub user_address: String,
-    pub trace_type: i32,      // 1: buy, 2: sell
-    pub token1_amount: Decimal,  // agent token amount
-    pub token2_amount: Decimal,  // raised token amount
+    pub trace_type: i32,        // 1: buy, 2: sell
+    pub token1_amount: Decimal, // agent token amount
+    pub token2_amount: Decimal, // raised token amount
     pub block_time: i64,
     pub txn_hash: String,
 }
 
 #[derive(Debug, Serialize)]
 pub struct TradeLogResp {
-    pub token1_name: String,      // agent token name
-    pub token2_name: String,      // raised token name
+    pub token1_name: String, // agent token name
+    pub token2_name: String, // raised token name
     pub list: Vec<TradeLogData>,
 }
 
@@ -115,13 +114,13 @@ pub struct HolderDistributionQuery {
 
 #[derive(Debug, Serialize)]
 pub struct HolderData {
-    pub user_address: String,      // 钱包地址
-    pub amount: Decimal,           // 持有数量
-    pub percentage: Decimal,       // 持有占比
+    pub user_address: String, // 钱包地址
+    pub amount: Decimal,      // 持有数量
+    pub percentage: Decimal,  // 持有占比
 }
 
 #[derive(Debug, Serialize)]
 pub struct HolderDistributionResp {
-    pub total_holders: u64,        // 持有者总数
-    pub list: Vec<HolderData>,     // 持有者列表
+    pub total_holders: u64,    // 持有者总数
+    pub list: Vec<HolderData>, // 持有者列表
 }

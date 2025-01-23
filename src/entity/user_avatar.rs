@@ -17,13 +17,14 @@ pub enum Relation {}
 impl ActiveModelBehavior for ActiveModel {}
 
 impl Entity {
-    pub async fn get_random_avatar(db: &DatabaseConnection) -> LibResult<Option<String>> {
+    pub async fn get_random_avatar(db: &DatabaseConnection) -> LibResult<String> {
         let avatars = Self::find()
             .all(db)
             .await?;
         
         Ok(avatars
             .choose(&mut rand::thread_rng())
-            .map(|avatar| avatar.avatar.clone()))
+            .map(|avatar| avatar.avatar.clone())
+            .unwrap_or_default())
     }
 } 

@@ -1,14 +1,14 @@
-use sea_orm::{EntityTrait, ActiveModelTrait, Set};
-use siwe::{generate_nonce, Message, VerificationOpts};
+use chrono::Utc;
 use ethers::utils::hex;
 use ethers::utils::hex::FromHex;
-use chrono::Utc;
+use sea_orm::{ActiveModelTrait, EntityTrait, Set};
+use siwe::{generate_nonce, Message, VerificationOpts};
 
 use super::schema;
 use crate::core::state::AppState;
-use crate::utility::*;
 use crate::entity::User;
 use crate::entity::UserAvatar;
+use crate::utility::*;
 
 pub async fn nonce() -> LibResult<schema::NonceRsp> {
     Ok(schema::NonceRsp {
@@ -22,7 +22,10 @@ pub async fn verify(
     nonce: String,
 ) -> LibResult<schema::VerifyResp> {
     // siwe verify the payload message and signature
-    let message: Message = payload.message.parse().map_err(|_| LibError::SiweMessageInvalid)?;
+    let message: Message = payload
+        .message
+        .parse()
+        .map_err(|_| LibError::SiweMessageInvalid)?;
     let address = format!("0x{}", hex::encode(message.address)).to_lowercase();
     tracing::info!("address {}", address);
 
@@ -31,7 +34,8 @@ pub async fn verify(
         if signature_str.starts_with("0x") {
             signature_str = signature_str[2..].to_string();
         }
-        let signature = <[u8; 65]>::from_hex(signature_str).map_err(|_| LibError::SiweSignInvalid)?;
+        let signature =
+            <[u8; 65]>::from_hex(signature_str).map_err(|_| LibError::SiweSignInvalid)?;
 
         let verification_opts = VerificationOpts {
             nonce: Some(nonce),
@@ -46,10 +50,10 @@ pub async fn verify(
     let user = User::find_by_id(&address).one(&app_state.db_pool).await?;
 
     if user.is_none() {
-        let name = format!("{}...{}", &address[..6], &address[address.len()-6..]);
-        
+        let name = format!("{}...{}", &address[..6], &address[address.len() - 6..]);
+
         let avatar = UserAvatar::get_random_avatar(&app_state.db_pool).await?;
-        
+
         let new_user = crate::entity::user::ActiveModel {
             address: Set(address.clone()),
             name: Set(name),
