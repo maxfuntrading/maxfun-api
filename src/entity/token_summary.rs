@@ -6,16 +6,16 @@ use rust_decimal::Decimal;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub token_address: String,
-    pub raised_token: Option<String>,
-    pub price: Option<Decimal>,
-    pub price_rate24h: Option<Decimal>,
-    pub volume_24h: Option<Decimal>,
-    pub liquidity: Option<Decimal>,
-    pub total_supply: Option<Decimal>,
-    pub market_cap: Option<Decimal>,
-    pub bonding_curve: Option<Decimal>,
-    pub uniswap_pool: Option<String>,
-    pub last_trade_ts: Option<i64>,
+    pub raised_token: String,
+    pub price: Decimal,
+    pub price_rate24h: Decimal,
+    pub volume_24h: Decimal,
+    pub liquidity: Decimal,
+    pub total_supply: Decimal,
+    pub market_cap: Decimal,
+    pub bonding_curve: Decimal,
+    pub uniswap_pool: String,
+    pub last_trade_ts: i64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -6,7 +6,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub address: String,
     pub name: String,
-    pub avatar: Option<String>,
+    pub avatar: String,
     pub create_ts: i64,
 }
 

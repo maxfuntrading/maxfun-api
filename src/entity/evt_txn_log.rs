@@ -12,9 +12,9 @@ pub struct Model {
     pub block_time: i64,
     pub txn_hash: String,
     pub address: String,
-    pub topic_0: Option<String>,
-    pub topic_1: Option<String>,
-    pub topic_2: Option<String>,
+    pub topic_0: String,
+    pub topic_1: String,
+    pub topic_2: String,
     pub data: String,
 }
 
