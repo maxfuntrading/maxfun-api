@@ -31,7 +31,8 @@ pub async fn get_token_list(
     app_state: AppState,
     query: schema::TokenListQuery,
 ) -> LibResult<schema::TokenListResp> {
-    let mut condition = Condition::all();
+    let mut condition = Condition::all()
+        .add(token_info::Column::TokenAddress.ne(""));
 
     // 基础过滤条件
     if let Some(keyword) = query.keyword {
