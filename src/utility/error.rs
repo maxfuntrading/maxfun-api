@@ -1,6 +1,7 @@
 use ethers::prelude::{Http, Provider};
 use thiserror::Error;
 use ethers::signers::WalletError;
+use hex::FromHexError;
 
 #[derive(Error, Debug)]
 pub enum LibError {
@@ -75,4 +76,7 @@ pub enum LibError {
 
     #[error("Comment failed, please try again")]
     CommentFailed,
+
+    #[error("hex error: {0}")]
+    HexError(#[from] FromHexError),
 }
