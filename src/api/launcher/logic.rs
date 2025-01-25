@@ -3,9 +3,9 @@ use crate::core::{consts, AppState};
 use crate::entity::{token_info, RaisedToken};
 use crate::utility::{LibError, LibResult};
 use chrono::Utc;
-use ethers::core::types::{Address, U256};
 use ethers::prelude::*;
 use ethers::utils::keccak256;
+use hex;
 use rust_decimal::Decimal;
 use sea_orm::{ActiveModelTrait, EntityTrait, NotSet, Set};
 
@@ -53,40 +53,21 @@ pub async fn launch_token(
     };
 
     let token = token.insert(&app_state.db_pool).await?;
+    let id_padded_hex = format!("{:0>64}", format!("{:016X}", token.id));
+    let chain_id_padded_hex = format!("{:0>64}", format!("{:016X}", *consts::CHAIN_ID));
 
-    println!("\n=== Signature Parameters ===");
-    println!("User Address: {}", user_address);
-    println!("Token ID: {}", token.id);
-    println!("Chain ID: {}", *consts::CHAIN_ID);
-
-    // 准备消息内容
-    let address: Address = user_address.parse()
-        .map_err(|e| LibError::ParamError(format!("Invalid address: {}", e)))?;
-    let id: u8 = token.id as u8;
-    let chain_id = U256::from(*consts::CHAIN_ID);
-
-    // Solidity packed keccak256 计算
-    let types = vec!["address", "uint8", "uint256"];
-    let mut chain_id_bytes = [0u8; 32];
-    chain_id.to_big_endian(&mut chain_id_bytes);
-    
-    let values: Vec<Vec<u8>> = vec![
-        address.as_bytes().to_vec(),
-        vec![id],
-        chain_id_bytes.to_vec(),
-    ];
-    
-    let packed = solidity_packed(types, values);
-    let message_hash = keccak256(packed);
-    println!("\n=== Message Hash ===");
-    println!("Hash (hex): 0x{}", hex::encode(&message_hash));
-
+    // 生成签名消息
+    let message = abi::encode_packed(&[
+        abi::Token::Address(user_address.parse().unwrap()),
+        abi::Token::Bytes(hex::decode(id_padded_hex).unwrap().into()),
+        abi::Token::Bytes(hex::decode(chain_id_padded_hex).unwrap().into()),
+    ])
+    .map_err(|e| LibError::ParamError(e.to_string()))?;
+    let message_hash = keccak256(message);
     // 直接使用私钥创建钱包
     let wallet = consts::EOA_PRIVATE_KEY.parse::<LocalWallet>()?;
-
     // 签名消息
     let signature = wallet.sign_message(&message_hash).await?;
-
     Ok(schema::LaunchTokenResp {
         id: token.id,
         signature: format!("0x{}", signature.to_string()),
@@ -98,29 +79,4 @@ fn set_option<T: Into<sea_orm::Value>>(value: Option<T>) -> sea_orm::ActiveValue
         Some(v) => Set(v),
         None => NotSet,
     }
-}
-
-// 打包数据，根据 Solidity 的打包规则
-fn solidity_packed(types: Vec<&str>, values: Vec<Vec<u8>>) -> Vec<u8> {
-    let mut packed = Vec::new();
-    for (ty, value) in types.iter().zip(values.iter()) {
-        match *ty {
-            "address" => {
-                // Solidity 地址类型是 32 字节，前面用零填充
-                let mut addr = vec![0u8; 32];
-                addr[12..].copy_from_slice(&value);
-                packed.extend_from_slice(&addr);
-            }
-            "uint8" => {
-                // uint8 是一个字节
-                packed.push(value[0]);
-            }
-            "uint256" => {
-                // uint256 是 32 字节
-                packed.extend_from_slice(value);
-            }
-            _ => panic!("不支持的类型: {}", ty),
-        }
-    }
-    packed
 }
