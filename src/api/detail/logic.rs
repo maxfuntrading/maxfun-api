@@ -5,7 +5,7 @@ use crate::entity::{
     evt_trade_log, kline_5m, raised_token, token_comment, token_info, token_summary, user,
     user_summary,
 };
-use crate::utility::{LibError, LibResult, with_domain};
+use crate::utility::{with_domain, LibError, LibResult};
 use chrono::Utc;
 use rust_decimal::Decimal;
 use sea_orm::NotSet;

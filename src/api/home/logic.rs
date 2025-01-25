@@ -1,7 +1,7 @@
 use super::schema::{self, SortField, SortOrder};
 use crate::core::AppState;
 use crate::entity::{token_info, token_summary, EvtTradeLog};
-use crate::utility::{LibResult, with_domain};
+use crate::utility::{with_domain, LibResult};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 
 pub async fn get_marquee(app_state: AppState) -> LibResult<schema::MarqueeListResp> {
@@ -31,8 +31,7 @@ pub async fn get_token_list(
     app_state: AppState,
     query: schema::TokenListQuery,
 ) -> LibResult<schema::TokenListResp> {
-    let mut condition = Condition::all()
-        .add(token_info::Column::TokenAddress.ne(""));
+    let mut condition = Condition::all().add(token_info::Column::TokenAddress.ne(""));
 
     // 基础过滤条件
     if let Some(keyword) = query.keyword {

@@ -1,7 +1,7 @@
 use crate::api::profile::schema;
 use crate::core::{consts, AppState};
 use crate::entity::{token_info, token_summary, User, UserSummary};
-use crate::utility::{LibError, LibResult, with_domain};
+use crate::utility::{with_domain, LibError, LibResult};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
 
 pub async fn get_user_info(
@@ -50,7 +50,8 @@ pub async fn get_token_created(
     address: String,
     query: schema::TokenCreatedQuery,
 ) -> LibResult<schema::TokenCreatedResp> {
-    let mut condition = Condition::all();
+    let mut condition = Condition::all().add(token_info::Column::TokenAddress.ne(""));
+
     condition = condition.add(token_info::Column::UserAddress.eq(address));
     // 基础过滤条件
     if let Some(keyword) = query.keyword {
