@@ -1,3 +1,4 @@
+use crate::entity::RaisedToken;
 use crate::api::detail::schema;
 use crate::core::consts;
 use crate::core::AppState;
@@ -32,21 +33,36 @@ pub async fn get_basic_info(
         .await?
         .ok_or_else(|| LibError::ParamError("Token summary not found".to_string()))?;
 
+    // 获取 raised token 信息
+    let raised_token = RaisedToken::find_by_id(&token.raised_token)
+        .one(&app_state.db_pool)
+        .await?
+        .ok_or_else(|| LibError::ParamError("Raised token not found".to_string()))?;
+
     Ok(schema::BasicInfoResp {
-        name: token.name,
-        symbol: token.symbol,
-        icon: with_domain(&token.icon),
-        price: summary.price,
-        price_rate24h: summary.price_rate24h,
-        market_cap: summary.market_cap,
-        liquidity: summary.liquidity,
-        volume24h: summary.volume_24h,
-        total_supply: token.total_supply,
-        description: token.description,
-        tag: token.tag,
-        website: token.website,
-        twitter: token.twitter,
-        telegram: token.telegram,
+        token_basic: schema::TokenBasicInfo {
+            name: token.name,
+            symbol: token.symbol,
+            icon: with_domain(&token.icon),
+            description: token.description,
+            tag: token.tag,
+            website: token.website,
+            twitter: token.twitter,
+            telegram: token.telegram,
+            total_supply: token.total_supply,
+            price: summary.price,
+            price_rate24h: summary.price_rate24h,
+            market_cap: summary.market_cap,
+            liquidity: summary.liquidity,
+            volume24h: summary.volume_24h,
+        },
+        raised_token: schema::RaisedTokenInfo {
+            address: raised_token.address,
+            name: raised_token.name,
+            symbol: raised_token.symbol,
+            icon: with_domain(&raised_token.icon),
+            decimal: raised_token.decimal,
+        },
     })
 }
 

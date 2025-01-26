@@ -6,21 +6,37 @@ pub struct BasicInfoQuery {
 }
 
 #[derive(Debug, Serialize)]
-pub struct BasicInfoResp {
+pub struct TokenBasicInfo {
     pub name: String,
     pub symbol: String,
     pub icon: String,
-    pub price: Decimal,
-    pub price_rate24h: Decimal,
-    pub market_cap: Decimal,
-    pub liquidity: Decimal,
-    pub volume24h: Decimal,
-    pub total_supply: Decimal,
     pub description: String,
     pub tag: String,
     pub website: String,
     pub twitter: String,
     pub telegram: String,
+    pub total_supply: Decimal,
+    pub price: Decimal,
+    pub price_rate24h: Decimal,
+    pub market_cap: Decimal,
+    pub liquidity: Decimal,
+    pub volume24h: Decimal,
+}
+
+#[derive(Debug, Serialize)]
+pub struct RaisedTokenInfo {
+    pub address: String,
+    pub name: String,
+    pub symbol: String,
+    pub icon: String,
+    pub decimal: i32,
+}
+
+#[derive(Debug, Serialize)]
+pub struct BasicInfoResp {
+    pub token_basic: TokenBasicInfo,
+    pub raised_token: RaisedTokenInfo,
+
 }
 
 #[derive(Debug, Deserialize)]
