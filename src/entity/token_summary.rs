@@ -10,12 +10,13 @@ pub struct Model {
     pub price: Decimal,
     pub price_rate24h: Decimal,
     pub volume_24h: Decimal,
-    pub liquidity: Decimal,
     pub total_supply: Decimal,
     pub market_cap: Decimal,
     pub bonding_curve: Decimal,
     pub uniswap_pool: String,
     pub last_trade_ts: i64,
+    pub price_token: Decimal,
+    pub pair_address: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

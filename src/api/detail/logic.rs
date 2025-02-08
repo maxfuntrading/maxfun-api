@@ -52,7 +52,6 @@ pub async fn get_basic_info(
             price: summary.price,
             price_rate24h: summary.price_rate24h,
             market_cap: summary.market_cap,
-            liquidity: summary.liquidity,
             volume24h: summary.volume_24h,
         },
         raised_token: schema::RaisedTokenInfo {
@@ -255,11 +254,13 @@ pub async fn get_trade_log(
             txn_index: trade.txn_index,
             log_index: trade.log_index,
             user_address: trade.user_address,
-            trace_type: trade.trace_type,
+            trade_type: trade.trade_type,
             token1_amount: trade.amount0,
             token2_amount: trade.amount1,
             block_time: trade.block_time,
             txn_hash: trade.txn_hash,
+            price: trade.price,
+            price_token: trade.price_token,
         })
         .collect();
 

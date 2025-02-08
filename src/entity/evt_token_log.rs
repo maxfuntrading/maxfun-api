@@ -11,8 +11,9 @@ pub struct Model {
     pub log_index: i64,
     pub block_time: i64,
     pub txn_hash: String,
-    pub user_address: String,
     pub token_address: String,
+    pub pair_address: String,
+    pub raised_address: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -38,6 +38,7 @@ pub async fn get_raised_tokens(app_state: AppState) -> LibResult<schema::RaisedT
             decimal: token.decimal,
             icon: with_domain(&token.icon),
             price: token.price,
+            oracle: token.oracle,
         })
         .collect();
 

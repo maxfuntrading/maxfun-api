@@ -19,7 +19,6 @@ pub struct TokenBasicInfo {
     pub price: Decimal,
     pub price_rate24h: Decimal,
     pub market_cap: Decimal,
-    pub liquidity: Decimal,
     pub volume24h: Decimal,
 }
 
@@ -107,11 +106,13 @@ pub struct TradeLogData {
     pub txn_index: i64,
     pub log_index: i64,
     pub user_address: String,
-    pub trace_type: i32,        // 1: buy, 2: sell
+    pub trade_type: i32,        // 1: buy, 2: sell
     pub token1_amount: Decimal, // agent token amount
     pub token2_amount: Decimal, // raised token amount
     pub block_time: i64,
     pub txn_hash: String,
+    pub price: Decimal,
+    pub price_token: Decimal,
 }
 
 #[derive(Debug, Serialize)]
