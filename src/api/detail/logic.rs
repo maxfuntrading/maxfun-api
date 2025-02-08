@@ -21,13 +21,13 @@ pub async fn get_basic_info(
 ) -> LibResult<schema::BasicInfoResp> {
     // 获取代币基本信息
     let token = token_info::Entity::find()
-        .filter(token_info::Column::TokenAddress.eq(token_address))
+        .filter(token_info::Column::TokenAddress.eq(token_address.to_lowercase()))
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Token not found".to_string()))?;
 
     // 获取代币市场信息
-    let summary = token_summary::Entity::find_by_id(token_address)
+    let summary = token_summary::Entity::find_by_id(token_address.to_lowercase())
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Token summary not found".to_string()))?;
@@ -71,7 +71,7 @@ pub async fn get_kline(
     limit: Option<u64>,
 ) -> LibResult<schema::KlineResp> {
     let mut query =
-        kline_5m::Entity::find().filter(kline_5m::Column::TokenAddress.eq(token_address));
+        kline_5m::Entity::find().filter(kline_5m::Column::TokenAddress.eq(token_address.to_lowercase()));
 
     // 添加时间戳过滤条件
     if let Some(ts) = last_open_ts {
@@ -114,14 +114,14 @@ pub async fn comment_history(
 
     // 计算总数
     let total = token_comment::Entity::find()
-        .filter(token_comment::Column::TokenAddress.eq(token_address))
+        .filter(token_comment::Column::TokenAddress.eq(token_address.to_lowercase()))
         .count(&app_state.db_pool)
         .await?;
 
     // 获取分页数据
     let comments = token_comment::Entity::find()
         .find_also_related(user::Entity) // 关联查询用户表
-        .filter(token_comment::Column::TokenAddress.eq(token_address))
+        .filter(token_comment::Column::TokenAddress.eq(token_address.to_lowercase()))
         .order_by_desc(token_comment::Column::CreateTs)
         .offset(((page - 1) * page_size) as u64)
         .limit(page_size)
@@ -151,7 +151,7 @@ pub async fn comment_submit(
     // 创建评论
     let comment_model = token_comment::ActiveModel {
         id: NotSet,
-        token_address: Set(token_address.clone()),
+        token_address: Set(token_address.clone().to_lowercase()),
         user_address: Set(user_address.clone()),
         comment: Set(comment.clone()),
         create_ts: Set(Utc::now().timestamp()),
@@ -196,7 +196,7 @@ pub async fn get_trade_log(
 ) -> LibResult<schema::TradeLogResp> {
     // 获取代币信息
     let token = token_info::Entity::find()
-        .filter(token_info::Column::TokenAddress.eq(token_address))
+        .filter(token_info::Column::TokenAddress.eq(token_address.to_lowercase()))
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Token not found".to_string()))?;
@@ -209,7 +209,7 @@ pub async fn get_trade_log(
 
     // 查询交易记录
     let mut query =
-        evt_trade_log::Entity::find().filter(evt_trade_log::Column::TokenAddress.eq(token_address));
+        evt_trade_log::Entity::find().filter(evt_trade_log::Column::TokenAddress.eq(token_address.to_lowercase()));
 
     // 使用复合主键作为游标
     match (last_block_number, last_txn_index, last_log_index) {
@@ -282,7 +282,7 @@ pub async fn holder_distribution(
 
     // 获取总供应量
     let token = token_summary::Entity::find()
-        .filter(token_summary::Column::TokenAddress.eq(token_address))
+        .filter(token_summary::Column::TokenAddress.eq(token_address.to_lowercase()))
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Token not found".to_string()))?;
@@ -291,13 +291,13 @@ pub async fn holder_distribution(
 
     // 获取持有者总数
     let total_holders = user_summary::Entity::find()
-        .filter(user_summary::Column::TokenAddress.eq(token_address))
+        .filter(user_summary::Column::TokenAddress.eq(token_address.to_lowercase()))
         .count(&app_state.db_pool)
         .await?;
 
     // 获取持有者列表
     let holders = user_summary::Entity::find()
-        .filter(user_summary::Column::TokenAddress.eq(token_address))
+        .filter(user_summary::Column::TokenAddress.eq(token_address.to_lowercase()))
         .order_by_desc(user_summary::Column::Amount)
         .offset(((page - 1) * page_size) as u64)
         .limit(page_size)
