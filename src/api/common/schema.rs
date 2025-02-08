@@ -20,6 +20,7 @@ pub struct RaisedToken {
     pub decimal: i32,
     pub icon: String,
     pub price: Decimal,
+    pub oracle: String,
 }
 
 #[derive(Debug, Serialize)]

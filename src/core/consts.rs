@@ -66,7 +66,7 @@ pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;
 pub const JWT_EXPT: i64 = 60 * 60 * 24;
 
 // 鉴权路由
-pub const NO_AUTH_ROUTERS: [&str; 13] = [
+pub const NO_AUTH_ROUTERS: [&str; 16] = [
     "/api/auth/nonce",
     "/api/auth/verify",
     "/api/home/marquee",
@@ -79,7 +79,10 @@ pub const NO_AUTH_ROUTERS: [&str; 13] = [
     "/api/ranking/process",
     "/api/ranking/gainer",
     "/api/ranking/market-cap",
-    "/api/ranking/trading-volume"
+    "/api/ranking/trading-volume",
+    "/api/common/tag",
+    "/api/common/raised-token",
+    "/api/launcher/raised-token-price"
 ];
 pub const SVC_AUTH_TOKEN: &str = "f2jv330PCK564jKsIZ6I7Y8jiOW83Jw5SsbmJZe9LOz2bglVz0eHA99LtG22c1U6";
 

@@ -15,6 +15,7 @@ pub struct Model {
     pub topic_0: String,
     pub topic_1: String,
     pub topic_2: String,
+    pub topic_3: String,
     pub data: String,
 }
 

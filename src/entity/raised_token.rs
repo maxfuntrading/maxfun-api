@@ -12,6 +12,7 @@ pub struct Model {
     pub icon: String,
     pub price: Decimal,
     pub create_ts: i64,
+    pub oracle: String, // oracle price address
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

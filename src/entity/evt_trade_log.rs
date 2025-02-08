@@ -16,12 +16,13 @@ pub struct Model {
     pub txn_hash: String,
     pub token_address: String,
     pub user_address: String,
-    pub trace_type: i32,
+    pub trade_type: i32,
     pub token0: String,
     pub amount0: Decimal,
     pub token1: String,
     pub amount1: Decimal,
-    pub price: String,
+    pub price: Decimal,
+    pub price_token: Decimal,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -36,7 +37,7 @@ impl Entity {
             r#"
             SELECT 
                 etl.user_address,
-                etl.trace_type,
+                etl.trade_type,
                 etl.token_address,
                 etl.amount1 as amount,
                 ti.icon,
@@ -56,7 +57,7 @@ impl Entity {
             .map(|row| {
                 Ok((
                     row.try_get::<String>("", "user_address")?,
-                    row.try_get::<i32>("", "trace_type")?,
+                    row.try_get::<i32>("", "trade_type")?,
                     row.try_get::<String>("", "token_address")?,
                     row.try_get::<Decimal>("", "amount")?,
                     row.try_get::<String>("", "icon")?,

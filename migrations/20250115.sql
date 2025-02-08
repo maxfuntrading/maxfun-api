@@ -53,12 +53,12 @@ CREATE TABLE evt_trade_log
     txn_hash      CHAR(66)        NOT NULL DEFAULT '',
     token_address CHAR(42)        NOT NULL DEFAULT '',
     user_address  CHAR(42)        NOT NULL DEFAULT '',
-    trace_type    INT             NOT NULL DEFAULT 0, -- 0 buy, 1 sell
+    trade_type    INT             NOT NULL DEFAULT 0, -- 0 buy, 1 sell
     token0        CHAR(42)        NOT NULL DEFAULT '',
     amount0       DECIMAL(40, 18) NOT NULL DEFAULT 0,
     token1        CHAR(42)        NOT NULL DEFAULT '',
     amount1       DECIMAL(40, 18) NOT NULL DEFAULT 0,
-    price         TEXT            NOT NULL DEFAULT '',
+    price         DECIMAL(40, 18) NOT NULL DEFAULT 0,
     PRIMARY KEY (block_number, txn_index, log_index)
 );
 CREATE INDEX idx_evt_trade_log_token_address ON evt_trade_log (token_address);
