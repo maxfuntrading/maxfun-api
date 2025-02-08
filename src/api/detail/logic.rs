@@ -1,7 +1,6 @@
-use crate::entity::RaisedToken;
 use crate::api::detail::schema;
-use crate::core::consts;
 use crate::core::AppState;
+use crate::entity::{RaisedToken, User};
 use crate::entity::{
     evt_trade_log, kline_5m, raised_token, token_comment, token_info, token_summary, user,
     user_summary,
@@ -149,20 +148,42 @@ pub async fn comment_submit(
     user_address: String,
     token_address: String,
     comment: String,
-) -> LibResult<String> {
+) -> LibResult<schema::CommentHistoryData> {
     // 创建评论
-    let comment = token_comment::ActiveModel {
+    let comment_model = token_comment::ActiveModel {
         id: NotSet,
-        token_address: Set(token_address),
-        user_address: Set(user_address),
-        comment: Set(comment),
+        token_address: Set(token_address.clone()),
+        user_address: Set(user_address.clone()),
+        comment: Set(comment.clone()),
         create_ts: Set(Utc::now().timestamp()),
     };
 
     // 保存到数据库
-    match comment.insert(&app_state.db_pool).await {
-        Ok(_) => Ok("Comment successful".to_string()),
-        Err(_) => Err(LibError::CommentFailed),
+    match comment_model.insert(&app_state.db_pool).await {
+        Ok(saved_comment) => {
+            // 获取用户信息
+            let user = User::find_by_id(&user_address)
+                .one(&app_state.db_pool)
+                .await?
+                .ok_or(LibError::UserNotFound)?;
+
+            Ok(schema::CommentHistoryData {
+                id: saved_comment.id,
+                user_address,
+                user_avatar: with_domain(&user.avatar),
+                comment,
+                create_ts: saved_comment.create_ts,
+            })
+        }
+        Err(e) => {
+            tracing::error!(
+                "Failed to insert comment. token: {}, user: {}, error: {:?}",
+                token_address,
+                user_address,
+                e
+            );
+            Err(LibError::CommentFailed)
+        }
     }
 }
 
