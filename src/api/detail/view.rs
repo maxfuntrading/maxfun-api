@@ -46,9 +46,17 @@ pub async fn comment_submit(
     Json(payload): Json<schema::CommentSubmitReq>,
 ) -> LibResult<impl IntoResponse> {
     // 验证评论长度
-    if payload.comment.chars().count() > 256 {
+    let comment_len = payload.comment.chars().count();
+    if comment_len < 1 || comment_len > 256 {
         return Err(LibError::ParamError(
-            "Comment must contain at most 256 characters".to_string(),
+            "Comment length must be between 1 and 256 characters".to_string(),
+        ));
+    }
+
+    // 验证评论内容
+    if payload.comment.trim().is_empty() {
+        return Err(LibError::ParamError(
+            "Comment cannot be empty or only whitespace".to_string(),
         ));
     }
 
