@@ -13,7 +13,7 @@ pub async fn get_raised_token_price(
     app_state: &AppState,
     token_address: &str,
 ) -> LibResult<Decimal> {
-    let raised_token = RaisedToken::find_by_id(token_address)
+    let raised_token = RaisedToken::find_by_id(token_address.to_lowercase())
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Invalid raised token".to_string()))?;
@@ -42,7 +42,7 @@ pub async fn launch_token(
         total_supply: Set(req
             .total_supply
             .unwrap_or_else(|| Decimal::new((*consts::DEFAULT_TOKEN_TOTAL_SUPPLY).into(), 0))),
-        raised_token: Set(req.raised_token),
+        raised_token: Set(req.raised_token.to_lowercase()),
         raised_amount: set_option(req.raised_amount),
         sale_ratio: set_option(req.sale_ratio),
         reserved_ratio: set_option(req.reserved_ratio),
