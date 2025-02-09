@@ -17,6 +17,8 @@ pub struct Model {
     pub last_trade_ts: i64,
     pub price_token: Decimal,
     pub pair_address: String,
+    pub liquidity: Decimal, // meme的卖出量 * price
+    pub liquidity_token: Decimal, // meme的卖出量
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

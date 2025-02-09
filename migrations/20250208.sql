@@ -1,11 +1,8 @@
 alter table public.token_summary
-    add price_token decimal(40, 18) default 0 not null;
-
-alter table public.token_summary
-    add pair_address char(42) default '' not null;
-
-alter table public.token_summary
-    drop column liquidity;
+    add price_token decimal(40, 18) default 0 not null,
+    add pair_address char(42) default '' not null,
+    add liquidity     decimal(40, 18) default 0 not null,
+    add liquidity_token decimal(40, 18) default 0 not null;
 
 alter table public.evt_txn_log
     alter column topic_1 drop not null,

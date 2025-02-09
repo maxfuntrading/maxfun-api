@@ -52,6 +52,7 @@ pub async fn get_basic_info(
             price: summary.price,
             price_rate24h: summary.price_rate24h,
             market_cap: summary.market_cap,
+            liquidity: summary.liquidity,
             volume24h: summary.volume_24h,
         },
         raised_token: schema::RaisedTokenInfo {
