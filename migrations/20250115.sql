@@ -36,7 +36,6 @@ CREATE TABLE token_summary
     price         DECIMAL(40, 18) NOT NULL DEFAULT 0,
     price_rate24h DECIMAL(3, 2)   NOT NULL DEFAULT 0,
     volume_24h    DECIMAL(40, 18) NOT NULL DEFAULT 0,
-    liquidity     DECIMAL(40, 18) NOT NULL DEFAULT 0,
     total_supply  DECIMAL(40, 18) NOT NULL DEFAULT 0,
     market_cap    DECIMAL(40, 18) NOT NULL DEFAULT 0,
     bonding_curve DECIMAL(4, 2)   NOT NULL DEFAULT 0,

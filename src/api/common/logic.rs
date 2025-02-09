@@ -65,7 +65,7 @@ pub async fn upload_icon(
         .last()
         .filter(|ext| consts::ALLOWED_IMAGE_TYPES.iter().any(|t| t.ends_with(ext)))
         .unwrap_or("png");
-    let key = format!("/icon/{}.{}", Uuid::new_v4(), ext);
+    let key = format!("icon/{}.{}", Uuid::new_v4(), ext);
     // 上传到 S3
     app_state
         .s3_client
@@ -82,6 +82,6 @@ pub async fn upload_icon(
         })?;
 
     // 返回访问 URL
-    let url = with_domain(&key);
+    let url = with_domain(&format!("/{}", key));
     Ok(schema::UploadIconResp { url })
 }

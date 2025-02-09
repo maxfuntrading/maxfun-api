@@ -19,6 +19,7 @@ pub struct TokenBasicInfo {
     pub price: Decimal,
     pub price_rate24h: Decimal,
     pub market_cap: Decimal,
+    pub liquidity: Decimal,
     pub volume24h: Decimal,
 }
 
