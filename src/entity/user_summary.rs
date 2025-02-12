@@ -1,4 +1,4 @@
-use crate::utility::LibResult;
+use crate::utility::{LibError, LibResult};
 use rust_decimal::Decimal;
 use sea_orm::entity::prelude::*;
 use sea_orm::Statement;
@@ -25,14 +25,10 @@ impl Entity {
         keyword: Option<String>,
         page: u64,
         page_size: u64,
-    ) -> LibResult<Vec<(String, String, Decimal, Decimal)>> {
-        let mut sql = format!(
+    ) -> LibResult<(Vec<(String, String, Decimal, Decimal)>, u64)> {
+        // 先构建基础 SQL
+        let base_sql = format!(
             r#"
-            SELECT
-                t2.icon,
-                t2.symbol,
-                t1.amount AS quantity,
-                COALESCE(t3.price * t1.amount, 0)::decimal(40,18) as value
             FROM
                 user_summary t1
                 LEFT JOIN token_info t2 ON t1.token_address = t2.token_address
@@ -43,8 +39,10 @@ impl Entity {
             user_address
         );
 
+        // 添加搜索条件
+        let mut where_clause = String::new();
         if let Some(keyword) = keyword {
-            sql.push_str(&format!(
+            where_clause = format!(
                 r#"
                 AND (
                     t2.token_address LIKE '%{}%'
@@ -53,14 +51,44 @@ impl Entity {
                 )
             "#,
                 keyword, keyword, keyword
-            ));
+            );
         }
+
+        // 计算总数
+        let count_sql = format!(
+            r#"
+            SELECT COUNT(*) as total
+            {}
+            {}
+        "#,
+            base_sql, where_clause
+        );
+        
+        let total: i64 = db
+            .query_one(Statement::from_string(db.get_database_backend(), count_sql))
+            .await?
+            .ok_or_else(|| LibError::ParamError("Failed to get total count".to_string()))?
+            .try_get("", "total")?;
+
+        // 查询数据
+        let mut sql = format!(
+            r#"
+            SELECT
+                t2.icon,
+                t2.symbol,
+                t1.amount AS quantity,
+                COALESCE(t3.price * t1.amount, 0)::decimal(40,18) as value
+            {}
+            {}
+        "#,
+            base_sql, where_clause
+        );
+
         sql.push_str(" ORDER BY value DESC NULLS LAST");
         let offset = (page - 1) * page_size;
         sql.push_str(&format!(" LIMIT {} OFFSET {}", page_size, offset));
 
         let stmt = Statement::from_string(db.get_database_backend(), sql);
-
         let rows = db.query_all(stmt).await?;
         let tokens = rows
             .into_iter()
@@ -73,6 +101,7 @@ impl Entity {
                 ))
             })
             .collect::<Result<Vec<_>, DbErr>>()?;
-        Ok(tokens)
+
+        Ok((tokens, total as u64))
     }
 }

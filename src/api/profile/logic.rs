@@ -28,9 +28,8 @@ pub async fn get_token_owned(
 ) -> LibResult<schema::TokenOwnedResp> {
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(20);
-    let tokens =
-        UserSummary::find_token_owned(&app_state.db_pool, address, query.keyword, page, page_size)
-            .await?;
+    let (tokens, total) = UserSummary::find_token_owned(&app_state.db_pool, address, query.keyword, page, page_size)
+        .await?;
 
     let list = tokens
         .into_iter()
@@ -42,7 +41,7 @@ pub async fn get_token_owned(
         })
         .collect();
 
-    Ok(schema::TokenOwnedResp { list })
+    Ok(schema::TokenOwnedResp { list, total })
 }
 
 pub async fn get_token_created(
@@ -90,6 +89,7 @@ pub async fn get_token_created(
             symbol: token.symbol,
             description: token.description,
             market_cap: summary.as_ref().map(|s| s.market_cap).unwrap_or_default(),
+            bonding_curve: summary.as_ref().map(|s| s.bonding_curve).unwrap_or_default(),
             is_launched: token.is_launched,
         })
         .collect();

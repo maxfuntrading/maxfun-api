@@ -27,6 +27,7 @@ pub struct TokenOwned {
 #[derive(Serialize, Debug)]
 pub struct TokenOwnedResp {
     pub list: Vec<TokenOwned>,
+    pub total: u64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -46,6 +47,7 @@ pub struct TokenInfo {
     pub symbol: String,       // Token Symbol
     pub description: String,
     pub market_cap: Decimal,
+    pub bonding_curve: Decimal,
     pub is_launched: bool, // Listed on Uniswap
 }
 
