@@ -32,7 +32,7 @@ impl Entity {
                 t2.icon,
                 t2.symbol,
                 t1.amount AS quantity,
-                COALESCE(t3.price * t1.amount, 0) as value
+                COALESCE(t3.price * t1.amount, 0)::decimal(40,18) as value
             FROM
                 user_summary t1
                 LEFT JOIN token_info t2 ON t1.token_address = t2.token_address
