@@ -27,12 +27,8 @@ pub static AWS_S3_ENDPOINT: Lazy<String> =
     Lazy::new(|| std::env::var("AWS_S3_ENDPOINT").expect("env not found AWS_S3_ENDPOINT"));
 
 // 链相关配置
-pub static CHAIN_ID: Lazy<i64> = Lazy::new(|| {
-    std::env::var("CHAIN_ID")
-        .unwrap_or_else(|_| "1".to_string())
-        .parse()
-        .unwrap_or(1)
-});
+pub static RPC_URL: Lazy<String> =
+    Lazy::new(|| std::env::var("RPC_URL").expect("env not found RPC_URL"));
 pub static EOA_PRIVATE_KEY: Lazy<String> =
     Lazy::new(|| std::env::var("EOA_PRIVATE_KEY").expect("env not found EOA_PRIVATE_KEY"));
 

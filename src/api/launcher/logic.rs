@@ -8,6 +8,7 @@ use ethers::utils::keccak256;
 use hex;
 use rust_decimal::Decimal;
 use sea_orm::{ActiveModelTrait, EntityTrait, NotSet, Set};
+use crate::utility::format;
 
 pub async fn get_raised_token_price(
     app_state: &AppState,
@@ -54,7 +55,11 @@ pub async fn launch_token(
 
     let token = token.insert(&app_state.db_pool).await?;
     let id_padded_hex = format!("{:0>64}", format!("{:016X}", token.id));
-    let chain_id_padded_hex = format!("{:0>64}", format!("{:016X}", *consts::CHAIN_ID));
+    
+    // 获取当前 chain id
+    let chain_id = format::get_chain_id(&consts::RPC_URL).await?;
+    println!("{}",chain_id);
+    let chain_id_padded_hex = format!("{:0>64}", format!("{:016X}", chain_id));
 
     // 生成签名消息
     let message = abi::encode_packed(&[
