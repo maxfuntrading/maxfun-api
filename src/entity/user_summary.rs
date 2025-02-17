@@ -27,31 +27,39 @@ impl Entity {
         page_size: u64,
     ) -> LibResult<(Vec<(String, String, Decimal, Decimal)>, u64)> {
         // 先构建基础 SQL
-        let base_sql = format!(
-            r#"
+        let base_sql = r#"
             FROM
                 user_summary t1
                 LEFT JOIN token_info t2 ON t1.token_address = t2.token_address
                 LEFT JOIN token_summary t3 ON t1.token_address = t3.token_address
             WHERE
-                t1.user_address = '{}'
-        "#,
-            user_address
-        );
+                t1.user_address = $1
+        "#;
 
         // 添加搜索条件
         let mut where_clause = String::new();
+        let mut params: Vec<sea_orm::Value> = vec![user_address.clone().into()];
+        
         if let Some(keyword) = keyword {
-            where_clause = format!(
-                r#"
-                AND (
-                    t2.token_address LIKE '%{}%'
-                    OR t2.name LIKE '%{}%'
-                    OR t2.symbol LIKE '%{}%'
-                )
-            "#,
-                keyword, keyword, keyword
-            );
+            // 检查是否是有效的以太坊地址格式（0x开头的42位十六进制）
+            let is_eth_address = keyword.len() == 42 
+                && keyword.starts_with("0x") 
+                && keyword[2..].chars().all(|c| c.is_ascii_hexdigit());
+
+            if is_eth_address {
+                // token_address 全匹配，不区分大小写
+                where_clause = " AND t2.token_address ILIKE $2".to_string();
+                params.push(keyword.into());
+            } else {
+                // 其他字段模糊匹配
+                where_clause = r#" 
+                    AND (
+                        t2.name ILIKE $2
+                        OR t2.symbol ILIKE $2
+                    )
+                "#.to_string();
+                params.push(format!("%{}%", keyword).into());
+            }
         }
 
         // 计算总数
@@ -64,8 +72,10 @@ impl Entity {
             base_sql, where_clause
         );
         
+        let stmt = Statement::from_sql_and_values(db.get_database_backend(), &count_sql, params.clone());
+        
         let total: i64 = db
-            .query_one(Statement::from_string(db.get_database_backend(), count_sql))
+            .query_one(stmt)
             .await?
             .ok_or_else(|| LibError::ParamError("Failed to get total count".to_string()))?
             .try_get("", "total")?;
@@ -88,7 +98,7 @@ impl Entity {
         let offset = (page - 1) * page_size;
         sql.push_str(&format!(" LIMIT {} OFFSET {}", page_size, offset));
 
-        let stmt = Statement::from_string(db.get_database_backend(), sql);
+        let stmt = Statement::from_sql_and_values(db.get_database_backend(), &sql, params);
         let rows = db.query_all(stmt).await?;
         let tokens = rows
             .into_iter()

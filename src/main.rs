@@ -6,6 +6,8 @@ use axum::{
     },
     middleware,
     Router,
+    body::Bytes,
+    extract::DefaultBodyLimit,
 };
 use tower_http::cors::CorsLayer;
 mod api;
@@ -39,10 +41,10 @@ async fn main() {
         cors = cors.allow_origin(tower_http::cors::Any);
     }
 
-
     let app = Router::new()
         .nest("/api", api::router())
         .layer(cors)
+        .layer(DefaultBodyLimit::max(10 * 1024 * 1024))
         .layer(middleware::from_fn(auth::auth))
         .with_state(app_state);
 

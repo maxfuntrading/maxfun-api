@@ -3,6 +3,8 @@ use crate::core::{consts, AppState};
 use crate::entity::{token_info, token_summary, User, UserSummary};
 use crate::utility::{with_domain, LibError, LibResult};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
+use sea_orm::prelude::Expr;
+use sea_orm::sea_query::extension::postgres::PgExpr;
 
 pub async fn get_user_info(
     app_state: AppState,
@@ -49,17 +51,27 @@ pub async fn get_token_created(
     address: String,
     query: schema::TokenCreatedQuery,
 ) -> LibResult<schema::TokenCreatedResp> {
-    let mut condition = Condition::all().add(token_info::Column::TokenAddress.ne(""));
+    let mut condition = Condition::all().add(Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ne(""));
 
     condition = condition.add(token_info::Column::UserAddress.eq(address));
     // 基础过滤条件
     if let Some(keyword) = query.keyword {
-        condition = condition.add(
-            Condition::any()
-                .add(token_info::Column::TokenAddress.contains(&keyword))
-                .add(token_info::Column::Name.contains(&keyword))
-                .add(token_info::Column::Symbol.contains(&keyword)),
-        );
+        // 检查是否是有效的以太坊地址格式（0x开头的42位十六进制）
+        let is_eth_address = keyword.len() == 42 
+            && keyword.starts_with("0x") 
+            && keyword[2..].chars().all(|c| c.is_ascii_hexdigit());
+
+        if is_eth_address {
+            // token_address 全匹配，不区分大小写
+            condition = condition.add(Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ilike(&keyword));
+        } else {
+            // 其他字段模糊匹配，不区分大小写
+            condition = condition.add(
+                Condition::any()
+                    .add(Expr::col((token_info::Entity, token_info::Column::Name)).ilike(&format!("%{}%", keyword)))
+                    .add(Expr::col((token_info::Entity, token_info::Column::Symbol)).ilike(&format!("%{}%", keyword))),
+            );
+        }
     }
 
     // 构建查询

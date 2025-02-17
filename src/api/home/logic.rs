@@ -3,6 +3,8 @@ use crate::core::AppState;
 use crate::entity::{token_info, token_summary, EvtTradeLog};
 use crate::utility::{with_domain, LibResult};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
+use sea_orm::prelude::Expr;
+use sea_orm::sea_query::extension::postgres::PgExpr;
 
 pub async fn get_marquee(app_state: AppState) -> LibResult<schema::MarqueeListResp> {
     let trades = EvtTradeLog::find_latest_trades(&app_state.db_pool).await?;
@@ -31,24 +33,37 @@ pub async fn get_token_list(
     app_state: AppState,
     query: schema::TokenListQuery,
 ) -> LibResult<schema::TokenListResp> {
-    let mut condition = Condition::all().add(token_info::Column::TokenAddress.ne(""));
+    let mut condition = Condition::all()
+        .add(Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ne(""));
 
     // 基础过滤条件
     if let Some(keyword) = query.keyword {
-        condition = condition.add(
-            Condition::any()
-                .add(token_info::Column::TokenAddress.contains(&keyword))
-                .add(token_info::Column::Name.contains(&keyword))
-                .add(token_info::Column::Symbol.contains(&keyword)),
-        );
+        // 检查是否是有效的以太坊地址格式（0x开头的42位十六进制）
+        let is_eth_address = keyword.len() == 42 
+            && keyword.starts_with("0x") 
+            && keyword[2..].chars().all(|c| c.is_ascii_hexdigit());
+
+        if is_eth_address {
+            // token_address 全匹配，不区分大小写
+            condition = condition.add(
+                Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ilike(&keyword)
+            );
+        } else {
+            // 其他字段模糊匹配，不区分大小写
+            condition = condition.add(
+                Condition::any()
+                    .add(Expr::col((token_info::Entity, token_info::Column::Name)).ilike(&format!("%{}%", keyword)))
+                    .add(Expr::col((token_info::Entity, token_info::Column::Symbol)).ilike(&format!("%{}%", keyword))),
+            );
+        }
     }
 
     if let Some(tag) = query.tag {
-        condition = condition.add(token_info::Column::Tag.eq(tag));
+        condition = condition.add(Expr::col((token_info::Entity, token_info::Column::Tag)).eq(tag));
     }
 
     if let Some(is_launched) = query.is_launched {
-        condition = condition.add(token_info::Column::IsLaunched.eq(is_launched));
+        condition = condition.add(Expr::col((token_info::Entity, token_info::Column::IsLaunched)).eq(is_launched));
     }
 
     // 构建查询

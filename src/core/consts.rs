@@ -83,5 +83,5 @@ pub const NO_AUTH_ROUTERS: [&str; 16] = [
 pub const SVC_AUTH_TOKEN: &str = "f2jv330PCK564jKsIZ6I7Y8jiOW83Jw5SsbmJZe9LOz2bglVz0eHA99LtG22c1U6";
 
 // 文件上传相关配置
-pub const MAX_UPLOAD_SIZE: usize = 4 * 1024 * 1024; // 5MB
+pub const MAX_UPLOAD_SIZE: usize = 4 * 1024 * 1024; // 4MB
 pub const ALLOWED_IMAGE_TYPES: [&str; 4] = ["image/jpeg", "image/png", "image/gif", "image/webp"];
