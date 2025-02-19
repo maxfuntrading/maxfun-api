@@ -18,6 +18,7 @@ pub struct TokenOwnedQuery {
 
 #[derive(Serialize, Debug)]
 pub struct TokenOwned {
+    pub token_address: String,
     pub token_icon: String,
     pub token_symbol: String,
     pub quantity: Decimal,

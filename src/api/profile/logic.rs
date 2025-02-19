@@ -35,7 +35,8 @@ pub async fn get_token_owned(
 
     let list = tokens
         .into_iter()
-        .map(|(icon, symbol, quantity, value)| schema::TokenOwned {
+        .map(|(token_address, icon, symbol, quantity, value)| schema::TokenOwned {
+            token_address,
             token_icon: with_domain(&icon),
             token_symbol: symbol,
             quantity,

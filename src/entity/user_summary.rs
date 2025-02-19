@@ -25,7 +25,7 @@ impl Entity {
         keyword: Option<String>,
         page: u64,
         page_size: u64,
-    ) -> LibResult<(Vec<(String, String, Decimal, Decimal)>, u64)> {
+    ) -> LibResult<(Vec<(String, String, String, Decimal, Decimal)>, u64)> {
         // 先构建基础 SQL
         let base_sql = r#"
             FROM
@@ -84,6 +84,7 @@ impl Entity {
         let mut sql = format!(
             r#"
             SELECT
+                t2.token_address,
                 t2.icon,
                 t2.symbol,
                 t1.amount AS quantity,
@@ -104,6 +105,7 @@ impl Entity {
             .into_iter()
             .map(|row| {
                 Ok((
+                    row.try_get::<String>("", "token_address")?,
                     row.try_get::<String>("", "icon")?,
                     row.try_get::<String>("", "symbol")?,
                     row.try_get::<Decimal>("", "quantity")?,
