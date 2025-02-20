@@ -51,22 +51,22 @@ pub async fn upload_icon(
     content_type: String,
     bytes: Vec<u8>,
 ) -> LibResult<schema::UploadIconResp> {
-    // 验证文件大小
+    // Verify file size
     if bytes.len() > consts::MAX_UPLOAD_SIZE {
         return Err(LibError::FileTooLarge);
     }
-    // 验证文件类型
+    // Verify file type
     if !consts::ALLOWED_IMAGE_TYPES.contains(&content_type.as_str()) {
         return Err(LibError::InvalidFileType);
     }
-    // 生成唯一文件名
+    // Generate unique filename
     let ext = file_name
         .split('.')
         .last()
         .filter(|ext| consts::ALLOWED_IMAGE_TYPES.iter().any(|t| t.ends_with(ext)))
         .unwrap_or("png");
     let key = format!("icon/{}.{}", Uuid::new_v4(), ext);
-    // 上传到 S3
+    // Upload to S3
     app_state
         .s3_client
         .put_object()
@@ -81,7 +81,7 @@ pub async fn upload_icon(
             LibError::UploadFailed
         })?;
 
-    // 返回访问 URL
+    // Return access URL
     let url = with_domain(&format!("/{}", key));
     Ok(schema::UploadIconResp { url })
 }

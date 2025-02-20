@@ -3,16 +3,16 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 pub struct LaunchTokenReq {
-    pub name: String, // 代币全称
+    pub name: String, // Token full name
     pub icon: String,
-    pub symbol: String, // 代币缩写
+    pub symbol: String, // Token symbol
     pub description: String,
     pub raised_token: String,
     pub tag: Option<String>,
     pub website: Option<String>,
     pub twitter: Option<String>,
     pub telegram: Option<String>,
-    pub total_supply: Option<Decimal>, // 代币总量
+    pub total_supply: Option<Decimal>, // Total token supply
     pub raised_amount: Option<Decimal>,
     pub sale_ratio: Option<Decimal>,
     pub reserved_ratio: Option<Decimal>,

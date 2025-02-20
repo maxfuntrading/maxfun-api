@@ -1,8 +1,8 @@
 use axum::{
-    response::{Response, IntoResponse},
+    extract::Request,
     http::StatusCode,
     middleware::Next,
-    extract::Request,
+    response::{IntoResponse, Response},
 };
 
 use crate::core::{consts, state};
@@ -28,22 +28,16 @@ pub async fn auth(mut request: Request, next: Next) -> Response {
                 Ok(auth_str) => {
                     if auth_str.starts_with("bearer") || auth_str.starts_with("Bearer") {
                         let token = auth_str[6..auth_str.len()].trim();
-                        if request.uri().path().starts_with("/api/svc/") {
-                            if token == consts::SVC_AUTH_TOKEN {
-                                is_login = true;
-                            }
-                        } else {
-                            if let Ok(result) = jwt::decode_token(token.into()) {
-                                is_login = true;
-                                user_addr = result.id;
-                            }
+
+                        if let Ok(result) = jwt::decode_token(token.into()) {
+                            is_login = true;
+                            user_addr = result.id;
                         }
                     }
                 }
             },
         }
     }
-
 
     if is_auth_path && !is_login {
         let rsp = resp::ErrorResponse {
@@ -53,6 +47,8 @@ pub async fn auth(mut request: Request, next: Next) -> Response {
         };
         return (StatusCode::FORBIDDEN, axum::Json(rsp)).into_response();
     }
-    request.extensions_mut().insert(state::ReqContext { user_addr });
+    request
+        .extensions_mut()
+        .insert(state::ReqContext { user_addr });
     next.run(request).await
 }

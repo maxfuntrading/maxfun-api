@@ -1,7 +1,7 @@
 use ethers::prelude::{Http, Provider};
-use thiserror::Error;
 use ethers::signers::WalletError;
 use hex::FromHexError;
+use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum LibError {

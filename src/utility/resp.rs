@@ -1,14 +1,13 @@
-use serde::Serialize;
-use axum::response::{Response, IntoResponse};
-use axum::http::StatusCode;
-use axum::Json;
 use crate::utility::error::LibError;
-
+use axum::http::StatusCode;
+use axum::response::{IntoResponse, Response};
+use axum::Json;
+use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct Resp200<T>
-    where
-        T: Serialize,
+where
+    T: Serialize,
 {
     code: i32,
     msg: &'static str,
@@ -16,8 +15,8 @@ pub struct Resp200<T>
 }
 
 impl<T> Resp200<T>
-    where
-        T: Serialize,
+where
+    T: Serialize,
 {
     pub fn new(d: T) -> impl IntoResponse {
         Json(Resp200 {
@@ -28,15 +27,12 @@ impl<T> Resp200<T>
     }
 }
 
-
 #[derive(Serialize, Debug)]
 pub struct ErrorResponse {
     pub code: i32,
     pub msg: String,
     pub data: Option<String>,
 }
-
-
 
 impl LibError {
     fn body_code(&self) -> i32 {
@@ -47,9 +43,9 @@ impl LibError {
     }
     fn status_code(&self) -> StatusCode {
         match self {
-            LibError::BadEnv(_)
-            | LibError::FormatError(_)
-            | LibError::ParseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            LibError::BadEnv(_) | LibError::FormatError(_) | LibError::ParseError(_) => {
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
             _ => StatusCode::BAD_REQUEST,
         }
     }

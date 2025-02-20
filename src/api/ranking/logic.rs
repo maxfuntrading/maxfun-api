@@ -3,7 +3,7 @@ use crate::core::AppState;
 use crate::entity::{token_info, token_summary};
 use crate::utility::{with_domain, LibResult};
 use chrono::Utc;
-use sea_orm::{EntityTrait, JoinType, QueryOrder, QuerySelect, RelationTrait, ColumnTrait, Condition, QueryFilter};
+use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QuerySelect};
 
 const TOP_LIMIT: u64 = 10;
 
@@ -71,7 +71,7 @@ pub async fn get_volume_ranking(app_state: AppState) -> LibResult<schema::Rankin
     })
 }
 
-// 辅助函数：将查询结果转换为排名项
+// Helper function: Convert query results to ranking items
 fn tokens_to_ranking_items(
     tokens: Vec<(token_info::Model, Option<token_summary::Model>)>,
 ) -> Vec<schema::RankingItem> {

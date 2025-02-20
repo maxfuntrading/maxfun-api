@@ -8,7 +8,6 @@ use ethers::utils::keccak256;
 use hex;
 use rust_decimal::Decimal;
 use sea_orm::{ActiveModelTrait, EntityTrait, NotSet, Set};
-use crate::utility::format;
 
 pub async fn get_raised_token_price(
     app_state: &AppState,
@@ -27,7 +26,7 @@ pub async fn launch_token(
     user_address: String,
     req: schema::LaunchTokenReq,
 ) -> LibResult<schema::LaunchTokenResp> {
-    // 创建代币
+    // Create token
     let token = token_info::ActiveModel {
         id: NotSet,
         token_address: Set("".to_string()),
@@ -55,13 +54,11 @@ pub async fn launch_token(
 
     let token = token.insert(&app_state.db_pool).await?;
     let id_padded_hex = format!("{:0>64}", format!("{:016X}", token.id));
-    
-    // 获取当前 chain id
-    let chain_id = format::get_chain_id(&consts::RPC_URL).await?;
-    println!("{}",chain_id);
-    let chain_id_padded_hex = format!("{:0>64}", format!("{:016X}", chain_id));
 
-    // 生成签名消息
+    // Get current chain id
+    let chain_id_padded_hex = format!("{:0>64}", format!("{:016X}", app_state.chain_id));
+
+    // Generate signature message
     let message = abi::encode_packed(&[
         abi::Token::Address(user_address.parse().unwrap()),
         abi::Token::Bytes(hex::decode(id_padded_hex).unwrap().into()),
@@ -69,9 +66,9 @@ pub async fn launch_token(
     ])
     .map_err(|e| LibError::ParamError(e.to_string()))?;
     let message_hash = keccak256(message);
-    // 直接使用私钥创建钱包
+    // Directly use private key to create wallet
     let wallet = consts::EOA_PRIVATE_KEY.parse::<LocalWallet>()?;
-    // 签名消息
+    // Sign message
     let signature = wallet.sign_message(&message_hash).await?;
     Ok(schema::LaunchTokenResp {
         id: token.id,

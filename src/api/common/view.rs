@@ -19,7 +19,7 @@ pub async fn upload_icon(
     State(app_state): State<AppState>,
     mut multipart: Multipart,
 ) -> LibResult<impl IntoResponse> {
-    // 获取上传的文件
+    // Get uploaded file
     let field = multipart
         .next_field()
         .await
@@ -29,7 +29,7 @@ pub async fn upload_icon(
         })?
         .ok_or(LibError::NoFileUploaded)?;
 
-    // 获取文件信息
+    // Get file information
     let file_name = field
         .file_name()
         .ok_or(LibError::ParamError("Invalid param".to_string()))?
@@ -49,7 +49,7 @@ pub async fn upload_icon(
         })?
         .to_vec();
 
-    // 上传文件
+    // Upload file
     let rsp = logic::upload_icon(app_state, file_name, content_type, bytes).await?;
     Ok(Resp200::new(rsp))
 }

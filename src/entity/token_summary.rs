@@ -1,5 +1,5 @@
-use sea_orm::entity::prelude::*;
 use rust_decimal::Decimal;
+use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "token_summary")]
@@ -17,13 +17,17 @@ pub struct Model {
     pub last_trade_ts: i64,
     pub price_token: Decimal,
     pub pair_address: String,
-    pub liquidity: Decimal, // meme的卖出量 * price
-    pub liquidity_token: Decimal, // meme的卖出量
+    pub liquidity: Decimal,       // Meme token sell amount * price
+    pub liquidity_token: Decimal, // Meme token sell amount
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(belongs_to = "super::token_info::Entity", from = "Column::TokenAddress", to = "super::token_info::Column::TokenAddress")]
+    #[sea_orm(
+        belongs_to = "super::token_info::Entity",
+        from = "Column::TokenAddress",
+        to = "super::token_info::Column::TokenAddress"
+    )]
     TokenInfo,
 }
 
@@ -33,4 +37,4 @@ impl Related<super::token_info::Entity> for Entity {
     }
 }
 
-impl ActiveModelBehavior for ActiveModel {} 
+impl ActiveModelBehavior for ActiveModel {}

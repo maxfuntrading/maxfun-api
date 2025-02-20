@@ -1,3 +1,3 @@
-pub(crate) mod view;
-pub mod schema;
 pub mod logic;
+pub mod schema;
+pub(crate) mod view;

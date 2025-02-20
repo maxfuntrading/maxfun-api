@@ -1,10 +1,10 @@
 use crate::api::profile::schema;
-use crate::core::{consts, AppState};
+use crate::core::AppState;
 use crate::entity::{token_info, token_summary, User, UserSummary};
 use crate::utility::{with_domain, LibError, LibResult};
-use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
 use sea_orm::prelude::Expr;
 use sea_orm::sea_query::extension::postgres::PgExpr;
+use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
 
 pub async fn get_user_info(
     app_state: AppState,
@@ -30,18 +30,21 @@ pub async fn get_token_owned(
 ) -> LibResult<schema::TokenOwnedResp> {
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(20);
-    let (tokens, total) = UserSummary::find_token_owned(&app_state.db_pool, address, query.keyword, page, page_size)
-        .await?;
+    let (tokens, total) =
+        UserSummary::find_token_owned(&app_state.db_pool, address, query.keyword, page, page_size)
+            .await?;
 
     let list = tokens
         .into_iter()
-        .map(|(token_address, icon, symbol, quantity, value)| schema::TokenOwned {
-            token_address,
-            token_icon: with_domain(&icon),
-            token_symbol: symbol,
-            quantity,
-            value,
-        })
+        .map(
+            |(token_address, icon, symbol, quantity, value)| schema::TokenOwned {
+                token_address,
+                token_icon: with_domain(&icon),
+                token_symbol: symbol,
+                quantity,
+                value,
+            },
+        )
         .collect();
 
     Ok(schema::TokenOwnedResp { list, total })
@@ -52,43 +55,52 @@ pub async fn get_token_created(
     address: String,
     query: schema::TokenCreatedQuery,
 ) -> LibResult<schema::TokenCreatedResp> {
-    let mut condition = Condition::all().add(Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ne(""));
+    let mut condition = Condition::all()
+        .add(Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ne(""));
 
     condition = condition.add(token_info::Column::UserAddress.eq(address));
-    // 基础过滤条件
+    // Basic filter conditions
     if let Some(keyword) = query.keyword {
-        // 检查是否是有效的以太坊地址格式（0x开头的42位十六进制）
-        let is_eth_address = keyword.len() == 42 
-            && keyword.starts_with("0x") 
+        // Check if it's a valid Ethereum address format (42 chars hex starting with 0x)
+        let is_eth_address = keyword.len() == 42
+            && keyword.starts_with("0x")
             && keyword[2..].chars().all(|c| c.is_ascii_hexdigit());
 
         if is_eth_address {
-            // token_address 全匹配，不区分大小写
-            condition = condition.add(Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ilike(&keyword));
+            // Exact match for token_address, case insensitive
+            condition = condition.add(
+                Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ilike(&keyword),
+            );
         } else {
-            // 其他字段模糊匹配，不区分大小写
+            // Fuzzy match for other fields, case insensitive
             condition = condition.add(
                 Condition::any()
-                    .add(Expr::col((token_info::Entity, token_info::Column::Name)).ilike(&format!("%{}%", keyword)))
-                    .add(Expr::col((token_info::Entity, token_info::Column::Symbol)).ilike(&format!("%{}%", keyword))),
+                    .add(
+                        Expr::col((token_info::Entity, token_info::Column::Name))
+                            .ilike(&format!("%{}%", keyword)),
+                    )
+                    .add(
+                        Expr::col((token_info::Entity, token_info::Column::Symbol))
+                            .ilike(&format!("%{}%", keyword)),
+                    ),
             );
         }
     }
 
-    // 构建查询
+    // Build query
     let query_builder = token_info::Entity::find()
         .find_also_related(token_summary::Entity)
         .filter(condition);
 
-    // 分页处理
+    // Handle pagination
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(20);
     let paginator = query_builder.paginate(&app_state.db_pool, page_size);
 
-    // 获取总数
+    // Get total count
     let total = paginator.num_items().await?;
 
-    // 获取当前页数据
+    // Get current page data
     let tokens = paginator.fetch_page(page - 1).await?;
 
     let list = tokens
@@ -102,7 +114,10 @@ pub async fn get_token_created(
             symbol: token.symbol,
             description: token.description,
             market_cap: summary.as_ref().map(|s| s.market_cap).unwrap_or_default(),
-            bonding_curve: summary.as_ref().map(|s| s.bonding_curve).unwrap_or_default(),
+            bonding_curve: summary
+                .as_ref()
+                .map(|s| s.bonding_curve)
+                .unwrap_or_default(),
             is_launched: token.is_launched,
         })
         .collect();

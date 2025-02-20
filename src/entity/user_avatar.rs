@@ -1,6 +1,6 @@
-use sea_orm::entity::prelude::*;
-use rand::seq::SliceRandom;
 use crate::utility::LibResult;
+use rand::seq::SliceRandom;
+use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "user_avatar")]
@@ -18,13 +18,11 @@ impl ActiveModelBehavior for ActiveModel {}
 
 impl Entity {
     pub async fn get_random_avatar(db: &DatabaseConnection) -> LibResult<String> {
-        let avatars = Self::find()
-            .all(db)
-            .await?;
-        
+        let avatars = Self::find().all(db).await?;
+
         Ok(avatars
             .choose(&mut rand::thread_rng())
             .map(|avatar| avatar.avatar.clone())
             .unwrap_or_default())
     }
-} 
+}

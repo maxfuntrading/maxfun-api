@@ -2,9 +2,9 @@ use super::schema::{self, SortField, SortOrder};
 use crate::core::AppState;
 use crate::entity::{token_info, token_summary, EvtTradeLog};
 use crate::utility::{with_domain, LibResult};
-use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 use sea_orm::prelude::Expr;
 use sea_orm::sea_query::extension::postgres::PgExpr;
+use sea_orm::{Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 
 pub async fn get_marquee(app_state: AppState) -> LibResult<schema::MarqueeListResp> {
     let trades = EvtTradeLog::find_latest_trades(&app_state.db_pool).await?;
@@ -36,24 +36,30 @@ pub async fn get_token_list(
     let mut condition = Condition::all()
         .add(Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ne(""));
 
-    // 基础过滤条件
+    // Basic filter conditions
     if let Some(keyword) = query.keyword {
-        // 检查是否是有效的以太坊地址格式（0x开头的42位十六进制）
-        let is_eth_address = keyword.len() == 42 
-            && keyword.starts_with("0x") 
+        // Check if it's a valid Ethereum address format (42 chars hex starting with 0x)
+        let is_eth_address = keyword.len() == 42
+            && keyword.starts_with("0x")
             && keyword[2..].chars().all(|c| c.is_ascii_hexdigit());
 
         if is_eth_address {
-            // token_address 全匹配，不区分大小写
+            // token_address exact match, case insensitive
             condition = condition.add(
-                Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ilike(&keyword)
+                Expr::col((token_info::Entity, token_info::Column::TokenAddress)).ilike(&keyword),
             );
         } else {
-            // 其他字段模糊匹配，不区分大小写
+            // Other fields fuzzy match, case insensitive
             condition = condition.add(
                 Condition::any()
-                    .add(Expr::col((token_info::Entity, token_info::Column::Name)).ilike(&format!("%{}%", keyword)))
-                    .add(Expr::col((token_info::Entity, token_info::Column::Symbol)).ilike(&format!("%{}%", keyword))),
+                    .add(
+                        Expr::col((token_info::Entity, token_info::Column::Name))
+                            .ilike(&format!("%{}%", keyword)),
+                    )
+                    .add(
+                        Expr::col((token_info::Entity, token_info::Column::Symbol))
+                            .ilike(&format!("%{}%", keyword)),
+                    ),
             );
         }
     }
@@ -63,15 +69,16 @@ pub async fn get_token_list(
     }
 
     if let Some(is_launched) = query.is_launched {
-        condition = condition.add(Expr::col((token_info::Entity, token_info::Column::IsLaunched)).eq(is_launched));
+        condition = condition
+            .add(Expr::col((token_info::Entity, token_info::Column::IsLaunched)).eq(is_launched));
     }
 
-    // 构建查询
+    // Build query
     let mut query_builder = token_info::Entity::find()
         .find_also_related(token_summary::Entity)
         .filter(condition);
 
-    // 排序处理
+    // Handle sorting
     match query.sort_by {
         Some(SortField::LaunchTs) => {
             query_builder = match query.sort_order.unwrap_or(SortOrder::Desc) {
@@ -102,15 +109,15 @@ pub async fn get_token_list(
         }
     }
 
-    // 分页处理
+    // Handle pagination
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(20);
     let paginator = query_builder.paginate(&app_state.db_pool, page_size);
 
-    // 获取总数
+    // Get total count
     let total = paginator.num_items().await?;
 
-    // 获取当前页数据
+    // Get current page data
     let tokens = paginator.fetch_page(page - 1).await?;
 
     let list = tokens

@@ -1,7 +1,7 @@
 use tracing::Level;
 use tracing_appender::rolling;
-use tracing_subscriber::prelude::*;
 use tracing_subscriber::fmt::{format::Writer, time::FormatTime};
+use tracing_subscriber::prelude::*;
 use tracing_subscriber::EnvFilter;
 
 struct LocalTimer;
@@ -22,13 +22,15 @@ pub fn init() {
     let err_file = rolling::daily("log", "error").with_max_level(Level::ERROR);
     let all_files = info_file.and(err_file);
 
-   let log_level = match dotenvy::var("RUST_LOG")
-        .unwrap_or_else(|_| "info".into()).as_str() {
+    let log_level = match dotenvy::var("RUST_LOG")
+        .unwrap_or_else(|_| "info".into())
+        .as_str()
+    {
         "trace" => Level::TRACE,
         "debug" => Level::DEBUG,
         "info" => Level::INFO,
         "error" => Level::ERROR,
-        _ => Level::INFO
+        _ => Level::INFO,
     };
     let env_layer = EnvFilter::from_default_env().add_directive(log_level.into());
     let stdout_layer = tracing_subscriber::fmt::layer()

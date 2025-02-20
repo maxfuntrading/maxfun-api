@@ -13,7 +13,7 @@ pub static PG_URL: Lazy<String> =
 pub static REDIS_URL: Lazy<String> =
     Lazy::new(|| std::env::var("REDIS_URL").expect("env not found REDIS_URL"));
 
-// aws 相关配置
+// AWS related configuration
 pub static AWS_REGION: Lazy<String> =
     Lazy::new(|| std::env::var("AWS_REGION").unwrap_or_else(|_| "ap-southeast-1".to_string()));
 pub static AWS_S3_BUCKET: Lazy<String> =
@@ -26,13 +26,13 @@ pub static AWS_SECRET_ACCESS_KEY: Lazy<String> = Lazy::new(|| {
 pub static AWS_S3_ENDPOINT: Lazy<String> =
     Lazy::new(|| std::env::var("AWS_S3_ENDPOINT").expect("env not found AWS_S3_ENDPOINT"));
 
-// 链相关配置
+// Chain related configuration
 pub static RPC_URL: Lazy<String> =
     Lazy::new(|| std::env::var("RPC_URL").expect("env not found RPC_URL"));
 pub static EOA_PRIVATE_KEY: Lazy<String> =
     Lazy::new(|| std::env::var("EOA_PRIVATE_KEY").expect("env not found EOA_PRIVATE_KEY"));
 
-// 最小募资金额 (USD)
+// Minimum raised amount (USD)
 pub static MIN_RAISED_AMOUNT_USD: Lazy<i64> = Lazy::new(|| {
     std::env::var("MIN_RAISED_AMOUNT_USD")
         .unwrap_or_else(|_| "2000".to_string())
@@ -40,7 +40,7 @@ pub static MIN_RAISED_AMOUNT_USD: Lazy<i64> = Lazy::new(|| {
         .unwrap_or(2000)
 });
 
-// 代币发行最小总量
+// Minimum token total supply
 pub static MIN_TOKEN_TOTAL_SUPPLY: Lazy<i64> = Lazy::new(|| {
     std::env::var("MIN_TOKEN_TOTAL_SUPPLY")
         .unwrap_or_else(|_| "1000000".to_string())
@@ -48,7 +48,7 @@ pub static MIN_TOKEN_TOTAL_SUPPLY: Lazy<i64> = Lazy::new(|| {
         .unwrap_or(1000000)
 });
 
-// 代币默认发行总量
+// Default token total supply
 pub static DEFAULT_TOKEN_TOTAL_SUPPLY: Lazy<i64> = Lazy::new(|| {
     std::env::var("DEFAULT_TOKEN_TOTAL_SUPPLY")
         .unwrap_or_else(|_| "1000000".to_string())
@@ -56,12 +56,12 @@ pub static DEFAULT_TOKEN_TOTAL_SUPPLY: Lazy<i64> = Lazy::new(|| {
         .unwrap_or(1000000)
 });
 
-// jwt 有效时长
+// JWT valid duration
 pub const JWT_LIVE: i64 = 60 * 60 * 24 * 7;
-// jwt 快过期时长
+// JWT near expiration duration
 pub const JWT_EXPT: i64 = 60 * 60 * 24;
 
-// 鉴权路由
+// Authentication routes
 pub const NO_AUTH_ROUTERS: [&str; 16] = [
     "/api/auth/nonce",
     "/api/auth/verify",
@@ -78,10 +78,9 @@ pub const NO_AUTH_ROUTERS: [&str; 16] = [
     "/api/ranking/trading-volume",
     "/api/common/tag",
     "/api/common/raised-token",
-    "/api/launcher/raised-token-price"
+    "/api/launcher/raised-token-price",
 ];
-pub const SVC_AUTH_TOKEN: &str = "f2jv330PCK564jKsIZ6I7Y8jiOW83Jw5SsbmJZe9LOz2bglVz0eHA99LtG22c1U6";
 
-// 文件上传相关配置
+// File upload configuration
 pub const MAX_UPLOAD_SIZE: usize = 4 * 1024 * 1024; // 4MB
 pub const ALLOWED_IMAGE_TYPES: [&str; 4] = ["image/jpeg", "image/png", "image/gif", "image/webp"];

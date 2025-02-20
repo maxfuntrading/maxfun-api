@@ -19,7 +19,7 @@ async fn validate_token_request(
     app_state: &AppState,
     req: &schema::LaunchTokenReq,
 ) -> LibResult<()> {
-    // 验证 Token Name
+    // Validate Token Name
     if req.name.chars().count() > 20
         || !req
             .name
@@ -31,26 +31,26 @@ async fn validate_token_request(
         ));
     }
 
-    // 验证 Token Symbol
+    // Validate Token Symbol
     if req.symbol.chars().count() > 10 || !req.symbol.chars().all(|c| c.is_alphanumeric()) {
         return Err(LibError::ParamError(
             "Token symbol must contain at most 10 characters".to_string(),
         ));
     }
 
-    // 验证描述长度（字符数）
+    // Validate description length (character count)
     if req.description.chars().count() > 256 {
         return Err(LibError::ParamError(
             "Description must contain at most 256 characters".to_string(),
         ));
     }
 
-    // 验证 URLs
+    // Validate URLs
     validate_url(&req.website)?;
     validate_url(&req.twitter)?;
     validate_url(&req.telegram)?;
 
-    // 验证 Total Supply
+    // Validate Total Supply
     if let Some(total_supply) = req.total_supply {
         if total_supply < Decimal::new((*consts::MIN_TOKEN_TOTAL_SUPPLY).into(), 0) {
             return Err(LibError::ParamError(format!(
@@ -60,7 +60,7 @@ async fn validate_token_request(
         }
     }
 
-    // 验证比例总和
+    // Validate ratio sum
     let sale_ratio = req.sale_ratio.unwrap_or(Decimal::new(80, 0));
     if sale_ratio < Decimal::new(60, 0) {
         return Err(LibError::ParamError(
@@ -75,7 +75,7 @@ async fn validate_token_request(
         return Err(LibError::ParamError("Total ratio must be 100%".to_string()));
     }
 
-    // 验证 raised amount
+    // Validate raised amount
     if let Some(raised_amount) = req.raised_amount {
         let price = logic::get_raised_token_price(app_state, &req.raised_token).await?;
         if raised_amount * price < Decimal::new((*consts::MIN_RAISED_AMOUNT_USD).into(), 0) {
@@ -94,10 +94,10 @@ pub async fn launch_token(
     Extension(ctx): Extension<ReqContext>,
     Json(payload): Json<schema::LaunchTokenReq>,
 ) -> LibResult<impl IntoResponse> {
-    // 参数校验
+    // Parameter validation
     validate_token_request(&app_state, &payload).await?;
 
-    // 调用业务逻辑
+    // Call business logic
     let rsp = logic::launch_token(app_state, ctx.user_addr, payload).await?;
     Ok(Resp200::new(rsp))
 }

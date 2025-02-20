@@ -1,13 +1,11 @@
 use crate::core::{auth, consts};
 use axum::{
+    extract::DefaultBodyLimit,
     http::{
         header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
         Method,
     },
-    middleware,
-    Router,
-    body::Bytes,
-    extract::DefaultBodyLimit,
+    middleware, Router,
 };
 use tower_http::cors::CorsLayer;
 mod api;
@@ -48,13 +46,13 @@ async fn main() {
         .layer(middleware::from_fn(auth::auth))
         .with_state(app_state);
 
-    // 读取环境变量
+    // Read environment variables
     let addr = format!(
         "{}:{}",
         consts::RUN_HOST.as_str(),
         consts::RUN_PORT.as_str()
     );
-    // 启动服务
+    // Start server
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

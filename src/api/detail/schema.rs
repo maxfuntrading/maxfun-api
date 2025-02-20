@@ -36,7 +36,6 @@ pub struct RaisedTokenInfo {
 pub struct BasicInfoResp {
     pub token_basic: TokenBasicInfo,
     pub raised_token: RaisedTokenInfo,
-
 }
 
 #[derive(Debug, Deserialize)]
@@ -67,8 +66,8 @@ pub struct KlineResp {
 #[derive(Debug, Deserialize)]
 pub struct CommentHistoryQuery {
     pub token_address: String,
-    pub page: Option<u64>,      // 页码，从1开始
-    pub page_size: Option<u64>, // 每页大小
+    pub page: Option<u64>,      // Page number, starts from 1
+    pub page_size: Option<u64>, // Items per page
 }
 
 #[derive(Debug, Serialize)]
@@ -83,7 +82,7 @@ pub struct CommentHistoryData {
 #[derive(Debug, Serialize)]
 pub struct CommentHistoryResp {
     pub list: Vec<CommentHistoryData>,
-    pub total: u64, // 总记录数
+    pub total: u64, // Total record count
 }
 
 #[derive(Debug, Deserialize)]
@@ -132,13 +131,13 @@ pub struct HolderDistributionQuery {
 
 #[derive(Debug, Serialize)]
 pub struct HolderData {
-    pub user_address: String, // 钱包地址
-    pub amount: Decimal,      // 持有数量
-    pub percentage: Decimal,  // 持有占比
+    pub user_address: String, // Wallet address
+    pub amount: Decimal,      // Holding amount
+    pub percentage: Decimal,  // Holding percentage
 }
 
 #[derive(Debug, Serialize)]
 pub struct HolderDistributionResp {
-    pub total_holders: u64,    // 持有者总数
-    pub list: Vec<HolderData>, // 持有者列表
+    pub total_holders: u64,    // Total number of holders
+    pub list: Vec<HolderData>, // List of holders
 }

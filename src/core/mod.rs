@@ -1,6 +1,6 @@
 pub mod auth;
 pub mod consts;
-pub mod state;
 pub mod pool;
+pub mod state;
 
 pub use state::AppState;

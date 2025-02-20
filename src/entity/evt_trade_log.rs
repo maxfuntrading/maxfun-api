@@ -1,7 +1,7 @@
-use sea_orm::entity::prelude::*;
-use rust_decimal::Decimal;
-use sea_orm::Statement;
 use crate::utility::LibResult;
+use rust_decimal::Decimal;
+use sea_orm::entity::prelude::*;
+use sea_orm::Statement;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "evt_trade_log")]
@@ -31,7 +31,9 @@ pub enum Relation {}
 impl ActiveModelBehavior for ActiveModel {}
 
 impl Entity {
-    pub async fn find_latest_trades(db: &DatabaseConnection) -> LibResult<Vec<(String, i32, String, Decimal, String, String, Option<String>)>> {
+    pub async fn find_latest_trades(
+        db: &DatabaseConnection,
+    ) -> LibResult<Vec<(String, i32, String, Decimal, String, String, Option<String>)>> {
         let stmt = Statement::from_string(
             db.get_database_backend(),
             r#"
@@ -47,7 +49,8 @@ impl Entity {
             LEFT JOIN token_info ti ON etl.token_address = ti.token_address
             ORDER BY etl.block_time DESC
             LIMIT 100
-            "#.to_owned(),
+            "#
+            .to_owned(),
         );
 
         let rows = db.query_all(stmt).await?;
@@ -69,4 +72,4 @@ impl Entity {
 
         Ok(trades)
     }
-} 
+}

@@ -1,10 +1,10 @@
 use crate::api::detail::schema;
 use crate::core::AppState;
-use crate::entity::{RaisedToken, User};
 use crate::entity::{
     evt_trade_log, kline_5m, raised_token, token_comment, token_info, token_summary, user,
     user_summary,
 };
+use crate::entity::{RaisedToken, User};
 use crate::utility::{with_domain, LibError, LibResult};
 use chrono::Utc;
 use rust_decimal::Decimal;
@@ -19,20 +19,20 @@ pub async fn get_basic_info(
     app_state: AppState,
     token_address: &str,
 ) -> LibResult<schema::BasicInfoResp> {
-    // 获取代币基本信息
+    // Get token basic information
     let token = token_info::Entity::find()
         .filter(token_info::Column::TokenAddress.eq(token_address.to_lowercase()))
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Token not found".to_string()))?;
 
-    // 获取代币市场信息
+    // Get token market information
     let summary = token_summary::Entity::find_by_id(token_address.to_lowercase())
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Token summary not found".to_string()))?;
 
-    // 获取 raised token 信息
+    // Get raised token information
     let raised_token = RaisedToken::find_by_id(&token.raised_token)
         .one(&app_state.db_pool)
         .await?
@@ -71,15 +71,15 @@ pub async fn get_kline(
     last_open_ts: Option<i64>,
     limit: Option<u64>,
 ) -> LibResult<schema::KlineResp> {
-    let mut query =
-        kline_5m::Entity::find().filter(kline_5m::Column::TokenAddress.eq(token_address.to_lowercase()));
+    let mut query = kline_5m::Entity::find()
+        .filter(kline_5m::Column::TokenAddress.eq(token_address.to_lowercase()));
 
-    // 添加时间戳过滤条件
+    // Add timestamp filter condition
     if let Some(ts) = last_open_ts {
         query = query.filter(kline_5m::Column::OpenTs.lt(ts));
     }
 
-    // 按时间倒序并限制返回数量
+    // Sort by time in descending order and limit return count
     let klines = query
         .order_by_desc(kline_5m::Column::OpenTs)
         .limit(limit.unwrap_or(100))
@@ -113,15 +113,15 @@ pub async fn comment_history(
     let page = page.unwrap_or(1);
     let page_size = page_size.unwrap_or(20);
 
-    // 计算总数
+    // Calculate total count
     let total = token_comment::Entity::find()
         .filter(token_comment::Column::TokenAddress.eq(token_address.to_lowercase()))
         .count(&app_state.db_pool)
         .await?;
 
-    // 获取分页数据
+    // Get paginated data
     let comments = token_comment::Entity::find()
-        .find_also_related(user::Entity) // 关联查询用户表
+        .find_also_related(user::Entity) // Join query with user table
         .filter(token_comment::Column::TokenAddress.eq(token_address.to_lowercase()))
         .order_by_desc(token_comment::Column::CreateTs)
         .offset(((page - 1) * page_size) as u64)
@@ -149,7 +149,7 @@ pub async fn comment_submit(
     token_address: String,
     comment: String,
 ) -> LibResult<schema::CommentHistoryData> {
-    // 创建评论
+    // Create comment
     let comment_model = token_comment::ActiveModel {
         id: NotSet,
         token_address: Set(token_address.clone().to_lowercase()),
@@ -158,10 +158,10 @@ pub async fn comment_submit(
         create_ts: Set(Utc::now().timestamp()),
     };
 
-    // 保存到数据库
+    // Save to database
     match comment_model.insert(&app_state.db_pool).await {
         Ok(saved_comment) => {
-            // 获取用户信息
+            // Get user information
             let user = User::find_by_id(&user_address)
                 .one(&app_state.db_pool)
                 .await?
@@ -195,24 +195,24 @@ pub async fn get_trade_log(
     last_log_index: Option<i64>,
     limit: Option<u64>,
 ) -> LibResult<schema::TradeLogResp> {
-    // 获取代币信息
+    // Get token information
     let token = token_info::Entity::find()
         .filter(token_info::Column::TokenAddress.eq(token_address.to_lowercase()))
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Token not found".to_string()))?;
 
-    // 获取募资代币信息
+    // Get raised token information
     let raised_token = raised_token::Entity::find_by_id(&token.raised_token)
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| LibError::ParamError("Raised token not found".to_string()))?;
 
-    // 查询交易记录
-    let mut query =
-        evt_trade_log::Entity::find().filter(evt_trade_log::Column::TokenAddress.eq(token_address.to_lowercase()));
+    // Query trade records
+    let mut query = evt_trade_log::Entity::find()
+        .filter(evt_trade_log::Column::TokenAddress.eq(token_address.to_lowercase()));
 
-    // 使用复合主键作为游标
+    // Use composite primary key as cursor
     match (last_block_number, last_txn_index, last_log_index) {
         (Some(block_num), Some(txn_idx), Some(log_idx)) => {
             query = query.filter(
@@ -239,7 +239,7 @@ pub async fn get_trade_log(
         }
     }
 
-    // 按主键排序
+    // Sort by primary key
     let trades = query
         .order_by_desc(evt_trade_log::Column::BlockNumber)
         .order_by_desc(evt_trade_log::Column::TxnIndex)
@@ -281,7 +281,7 @@ pub async fn holder_distribution(
     let page = page.unwrap_or(1);
     let page_size = page_size.unwrap_or(20);
 
-    // 获取总供应量
+    // Get total supply
     let token = token_summary::Entity::find()
         .filter(token_summary::Column::TokenAddress.eq(token_address.to_lowercase()))
         .one(&app_state.db_pool)
@@ -290,13 +290,13 @@ pub async fn holder_distribution(
 
     let total_supply = token.total_supply;
 
-    // 获取持有者总数
+    // Get total number of holders
     let total_holders = user_summary::Entity::find()
         .filter(user_summary::Column::TokenAddress.eq(token_address.to_lowercase()))
         .count(&app_state.db_pool)
         .await?;
 
-    // 获取持有者列表
+    // Get holder list
     let holders = user_summary::Entity::find()
         .filter(user_summary::Column::TokenAddress.eq(token_address.to_lowercase()))
         .order_by_desc(user_summary::Column::Amount)

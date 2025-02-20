@@ -45,7 +45,7 @@ pub async fn comment_submit(
     Extension(ctx): Extension<ReqContext>,
     Json(payload): Json<schema::CommentSubmitReq>,
 ) -> LibResult<impl IntoResponse> {
-    // 验证评论长度
+    // Verify comment length
     let comment_len = payload.comment.chars().count();
     if comment_len < 1 || comment_len > 256 {
         return Err(LibError::ParamError(
@@ -53,7 +53,7 @@ pub async fn comment_submit(
         ));
     }
 
-    // 验证评论内容
+    // Verify comment content
     if payload.comment.trim().is_empty() {
         return Err(LibError::ParamError(
             "Comment cannot be empty or only whitespace".to_string(),

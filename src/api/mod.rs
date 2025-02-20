@@ -69,6 +69,9 @@ pub fn router() -> Router<AppState> {
                 .route("/process", get(ranking::view::process_ranking))
                 .route("/gainer", get(ranking::view::gainer_ranking))
                 .route("/market-cap", get(ranking::view::market_cap_ranking))
-                .route("/trading-volume", get(ranking::view::trading_volume_ranking)),
+                .route(
+                    "/trading-volume",
+                    get(ranking::view::trading_volume_ranking),
+                ),
         )
 }

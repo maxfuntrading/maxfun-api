@@ -1,12 +1,10 @@
-use chrono::{DateTime, Utc, FixedOffset};
+use chrono::{DateTime, FixedOffset, Utc};
 use std::time::Duration;
-use ethers::providers::{Http, Middleware, Provider};
-use crate::utility::{LibError, LibResult};
-
+#[allow(dead_code)]
 pub fn format_name(addr: &str) -> String {
     format!("{}...{}", &addr[..5], &addr[addr.len() - 3..])
 }
-
+#[allow(dead_code)]
 pub fn get_current_utc8_time() -> String {
     let utc_time = Utc::now();
     let offset = FixedOffset::east_opt(8 * 3600);
@@ -15,21 +13,10 @@ pub fn get_current_utc8_time() -> String {
     formated_time
 }
 
-
+#[allow(dead_code)]
 pub fn format_duration(duration: Duration) -> String {
     let total_seconds = duration.as_secs();
     let minutes = total_seconds / 60;
     let seconds = total_seconds % 60;
-    format!("{:02}:{:02}", minutes, seconds)       // mm:ss
-}
-
-pub async fn get_chain_id(rpc_url: &str) -> LibResult<i64> {
-    let provider = Provider::<Http>::try_from(rpc_url)
-        .map_err(|_| LibError::ParamError("Invalid RPC URL".to_string()))?;
-    
-    let chain_id = provider.get_chainid().await
-        .map_err(|e| LibError::EthersError(e))?
-        .as_u64() as i64;
-
-    Ok(chain_id)
+    format!("{:02}:{:02}", minutes, seconds) // mm:ss
 }

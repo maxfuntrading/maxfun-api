@@ -1,9 +1,8 @@
-use serde::{Deserialize, Serialize};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use serde::{Deserialize, Serialize};
 
 use crate::core::consts;
-use crate::utility::{LibResult, error::LibError};
-
+use crate::utility::{error::LibError, LibResult};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Claims {
@@ -14,6 +13,7 @@ pub struct Claims {
 
 pub struct DecodeResult {
     pub id: String,
+    #[allow(dead_code)]
     pub is_exp: bool,
 }
 
@@ -46,7 +46,11 @@ pub fn decode_token(token: String) -> LibResult<DecodeResult> {
 
     let now = chrono::Local::now().timestamp();
     let claims = token_data.claims;
-    let is_exp = if claims.exp - now < consts::JWT_EXPT { true } else { false };
+    let is_exp = if claims.exp - now < consts::JWT_EXPT {
+        true
+    } else {
+        false
+    };
     let result = DecodeResult {
         id: claims.id,
         is_exp,
