@@ -309,7 +309,7 @@ pub async fn holder_distribution(
         .into_iter()
         .map(|holder| {
             let percentage = if total_supply > Decimal::ZERO {
-                (holder.amount * Decimal::new(100, 0)) / total_supply
+                holder.amount / total_supply
             } else {
                 Decimal::ZERO
             };
