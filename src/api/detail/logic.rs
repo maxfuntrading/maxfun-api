@@ -266,8 +266,8 @@ pub async fn get_trade_log(
         .collect();
 
     Ok(schema::TradeLogResp {
-        token1_name: token.name,
-        token2_name: raised_token.name,
+        token1_name: token.symbol,
+        token2_name: raised_token.symbol,
         list,
     })
 }
