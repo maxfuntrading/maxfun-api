@@ -49,6 +49,7 @@ pub struct TokenInfo {
     pub description: String,
     pub market_cap: Decimal,
     pub bonding_curve: Decimal,
+    pub price_rate24h: Decimal,
     pub is_launched: bool, // Listed on Uniswap
 }
 
