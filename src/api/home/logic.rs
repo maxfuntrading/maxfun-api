@@ -131,10 +131,8 @@ pub async fn get_token_list(
             symbol: token.symbol,
             description: token.description,
             market_cap: summary.as_ref().map(|s| s.market_cap).unwrap_or_default(),
-            bonding_curve: summary
-                .as_ref()
-                .map(|s| s.bonding_curve)
-                .unwrap_or_default(),
+            bonding_curve: summary.as_ref().map(|s| s.bonding_curve).unwrap_or_default(),
+            price_rate24h: summary.as_ref().map(|s| s.price_rate24h).unwrap_or_default(),
             is_launched: token.is_launched,
         })
         .collect();
