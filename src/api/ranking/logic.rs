@@ -10,6 +10,7 @@ const TOP_LIMIT: u64 = 10;
 pub async fn get_process_ranking(app_state: AppState) -> LibResult<schema::RankingResp> {
     let tokens = token_info::Entity::find()
         .filter(token_info::Column::TokenAddress.ne(""))
+        .filter(token_info::Column::IsLaunched.eq(false))
         .find_also_related(token_summary::Entity)
         .order_by_desc(token_summary::Column::BondingCurve)
         .limit(TOP_LIMIT)
