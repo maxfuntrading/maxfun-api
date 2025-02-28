@@ -37,13 +37,13 @@ jobs:
 
       # 构建并推送镜像
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
           tags: |
             ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
             ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
