@@ -45,5 +45,3 @@ jobs:
             ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
             ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
           push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
