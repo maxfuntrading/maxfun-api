@@ -17,6 +17,7 @@ pub struct TokenBasicInfo {
     pub telegram: String,
     pub total_supply: Decimal,
     pub price: Decimal,
+    pub price_token: Decimal,
     pub price_rate24h: Decimal,
     pub market_cap: Decimal,
     pub liquidity: Decimal,

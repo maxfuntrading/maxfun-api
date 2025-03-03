@@ -50,9 +50,6 @@ pub enum LibError {
     #[error("siwe signature invalid")]
     SiweSignInvalid,
 
-    #[error("cookie invalid")]
-    CookieInvalid,
-
     #[error("other error: {0}")]
     Other(#[from] anyhow::Error),
 

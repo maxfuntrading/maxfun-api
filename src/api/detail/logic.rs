@@ -50,6 +50,7 @@ pub async fn get_basic_info(
             telegram: token.telegram,
             total_supply: token.total_supply,
             price: summary.price,
+            price_token: summary.price_token,
             price_rate24h: summary.price_rate24h,
             market_cap: summary.market_cap,
             liquidity: summary.liquidity,

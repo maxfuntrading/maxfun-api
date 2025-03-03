@@ -20,7 +20,7 @@ pub async fn create_db_pool(pg_url: &str) -> DB {
         .acquire_timeout(Duration::from_secs(8))
         .idle_timeout(Duration::from_secs(8))
         .max_lifetime(Duration::from_secs(8))
-        .sqlx_logging(true)
+        .sqlx_logging(false)
         .sqlx_logging_level(log::LevelFilter::Info);
 
     Database::connect(opt)
