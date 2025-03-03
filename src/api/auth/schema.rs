@@ -9,7 +9,6 @@ pub struct NonceRsp {
 pub struct VerifyReq {
     pub message: String,
     pub signature: String,
-    pub nonce: String,
     #[allow(dead_code)]
     pub chain_id: Option<u32>,
     #[allow(dead_code)]
