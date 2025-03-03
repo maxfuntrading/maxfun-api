@@ -19,7 +19,6 @@ pub async fn nonce() -> LibResult<schema::NonceRsp> {
 pub async fn verify(
     app_state: AppState,
     payload: schema::VerifyReq,
-    nonce: String,
 ) -> LibResult<schema::VerifyResp> {
     // siwe verify the payload message and signature
     let message: Message = payload
@@ -38,7 +37,7 @@ pub async fn verify(
             <[u8; 65]>::from_hex(signature_str).map_err(|_| LibError::SiweSignInvalid)?;
 
         let verification_opts = VerificationOpts {
-            nonce: Some(nonce),
+            nonce: Some(payload.nonce),
             ..Default::default()
         };
         message
