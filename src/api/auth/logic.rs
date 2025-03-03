@@ -37,7 +37,7 @@ pub async fn verify(
             <[u8; 65]>::from_hex(signature_str).map_err(|_| LibError::SiweSignInvalid)?;
 
         let verification_opts = VerificationOpts {
-            nonce: Some(payload.nonce),
+            nonce: Some(message.nonce.clone()),
             ..Default::default()
         };
         message
