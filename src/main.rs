@@ -19,7 +19,7 @@ async fn main() {
     let app_state = core::state::init_state().await;
 
     let mut cors = CorsLayer::new()
-        // .allow_credentials(true)
+        .allow_credentials(true)
         .allow_methods([
             Method::GET,
             Method::POST,
@@ -41,9 +41,9 @@ async fn main() {
 
     let app = Router::new()
         .nest("/api", api::router())
-        .layer(cors)
-        .layer(DefaultBodyLimit::max(10 * 1024 * 1024))
         .layer(middleware::from_fn(auth::auth))
+        .layer(DefaultBodyLimit::max(10 * 1024 * 1024))
+        .layer(cors)
         .with_state(app_state);
 
     // Read environment variables
